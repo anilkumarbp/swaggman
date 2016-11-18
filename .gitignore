@@ -2,3 +2,6 @@
 *.swp
 *.log
 node_modules
+rcPostmanCollection_*.json
+ref
+.env

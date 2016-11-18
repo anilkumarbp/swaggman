@@ -9,6 +9,9 @@
   "author": "Benjamin Dean <benjamin@benjamindean.com> (http://benjamindean.com)",
   "license": "MIT",
   "dependencies": {
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "request": "^2.78.0",
     "swagger2-to-postman": "^1.1.4"
   }
 }
