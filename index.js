@@ -1,33 +1,88 @@
 'use strict';
 
 // Deps
-var fs = require('fs');
-var http = require('http');
-var request = require('request');
+require('dotenv').config();
 
 // Vars
-var swaggerSpecURI = process.env.RC_SWAGGER_SPEC_URI;
-var swaggerJSON = null;
+const swaggerSpecUri = process.env.RC_SWAGGER_SPEC_URI;
 
 // Fetch the RC Swagger Spec
-request(swaggerSpecURI, function(error, response, body) {
-    if(!error && 200 === response.statusCode) {
-        console.log('RC Swagger Received');
-        swaggerJSON = JSON.parse(body);
-        convert(swaggerJSON, function(err, data) {
-            if(err) {
-                console.error(err);
-                throw err;
-            } else {
-                console.log('CONVERTED!');
-                writePostmanFile(data);
+const getSwaggerFromUri = function(url) {
+    // Return new pending promise
+    return new Promise((resolve, reject) => {
+    if(!url || '' === url) reject(new Error('getSwaggerFromUri must be passed a string representing the URI to the Swagger Specification'));
+        const lib = url.startsWith('https') ? require('https') : require('http');
+        const request = lib.get(url, (response) => {
+            // Handle HTTP errors
+            if(response.statusCode < 200 || response.statusCode > 299) {
+                reject(new Error('Failed to load URL, status code: ', response.statusCode));
             }
+            // Placeholder for chunked response
+            const body = [];
+            response.on('data', (chunk) => {
+                body.push(chunk);
+            });
+            response.on('end', () => {
+                resolve(body.join(''));
+            });
         });
-    } else {
-        console.error(error);
-        throw error;
+        request.on('error', (err) => {
+            reject(err);
+        });
+    });
+};
+
+// Build the Postman Collection Meta Data
+const createCollectionMeta = function(swaggerJSON, postman) {
+    try {
+        // Define base Postman schema
+        const postman       = postman || {};
+        postman.info        = {};
+        postman.variables   = [];
+        postman.items       = [];
+        postman.events      = [];
+
+        // Define Postman Info from Environment Variables but default to Swagger properties
+        postman.info.name           = (process.env.TITLE) ? process.env.TITLE : swaggerJSON.info.title;
+        postman.info.description    = (process.env.DESCRIPTION) ? process.env.DESCRIPTION : swaggerJSON.info.description;
+        postman.info.version        = (process.env.POSTMAN_SCHEMA_VERSION) ? process.env.POSTMAN_SCHEMA_VERSION : swaggerJSON.info.version;
+        postman.info.schema         = process.env.POSTMAN_SCHEMA_Uri || "https://schema.getpostman.com/json/collection/v2.0.0/collection.json";
+    } catch(e) {
+        return Promise.reject(e);
     }
-});
+
+    return Promise.resolve(swaggerJSON, postman);
+}
+
+// Build the Postman Collection Directory Structures
+const createCollectionDirs = function(swaggerJSON, postman) {
+    try {
+
+    } catch(e) {
+        return Promise.reject(e)
+    }
+    
+    return Promise.resolve(postman);
+}
+
+// Write Postman Collection JSON to filename specified
+const writePostmanCollection = function(json) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(process.env.POSTMAN_JSON_FILENAME_PREFIX + '_' + now + '.json', JSON.stringify(result), 'utf8', (err) => {
+            if(err) reject(err);
+            else resolve(data);
+        });
+    });
+};
+
+getSwaggerFromUri(swaggerSpecUri)
+.then((swagg) => {
+    return JSON.parse(swagg);
+})
+.then(createCollectionMeta)
+.then(createCollectionDirs)
+.then((postmanDirs) => console.log(postmanDirs))
+.catch((err) => console.error(err));
 
 function writePostmanFile(json) {
     if(json) {
@@ -76,19 +131,7 @@ function convert(swaggerJSON, cb) {
     if(!swaggerJSON || !cb) {
         console.error('convert expects swaggerJSON and callback as parameters');
     } else {
-        // Define base Postman schema
-        var postman         = {};
-        postman.info        = {};
-        postman.variables   = [];
-        postman.items       = [];
-        postman.events      = [];
-
-        // Define Postman Info from Environment Variables but default to Swagger properties
-        postman.info.name = (process.env.TITLE) ? process.env.TITLE : swaggerJSON.info.title;
-        postman.info.description = (process.env.DESCRIPTION) ? process.env.DESCRIPTION : swaggerJSON.info.description;
-        postman.info.schema = process.env.POSTMAN_SCHEMA_URI || "https://schema.getpostman.com/json/collection/v2.0.0/collection.json";
-        postman.info.version = process.env.POSTMAN_SCHEMA_VERSION || swaggerJSON.version;
-
         // Define Postman Folders based on provided mapping but add graceful defaults
     }
 }
+

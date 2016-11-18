@@ -1,7 +1,7 @@
 {
-  "name": "rc-swagger-to-postman",
-  "version": "1.0.0",
-  "description": "Simple module to convert the RingCentral Swagger Spec into a handy Postman Collection",
+  "name": "swaggman",
+  "version": "0.1.0",
+  "description": "Simple module to convert Swagger2 Spec into Postman2 Collection",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,9 +9,6 @@
   "author": "Benjamin Dean <benjamin@benjamindean.com> (http://benjamindean.com)",
   "license": "MIT",
   "dependencies": {
-    "fs": "0.0.1-security",
-    "http": "0.0.0",
-    "request": "^2.78.0",
-    "swagger2-to-postman": "^1.1.4"
+    "dotenv": "^2.0.0"
   }
 }
