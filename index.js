@@ -160,6 +160,12 @@ const createReqItem = function(path) {
 
 /** 
   * urlBuilder
+  *
+  * Used for building the Postman URL property for Collection.item.request.url
+  * Returns url with parts separated by '/'
+  * Example Usage:
+  * let ringCentral = urlBuilder('https://platform.devtest.ringcentral.com/restapi/v1.0');
+  * ringCentral.account.~.extension.~.presence; // https://platform.devtest.ringcentral.com/restapi/v1.0/account/~/extension/~/presence
 **/
 const urlBuilder = (domain) => {
     domain = domain ? domain : process.env.HOST;
@@ -190,40 +196,35 @@ const writePostmanCollection = function(json) {
     });
 };
 
-getSwaggerFromUri(swaggerSpecUri)
-.then((swagg) => {
-    return JSON.parse(swagg);
-})
-.then(createMeta)
-.then(createFolders)
-.then(createItems)
-.then((config) => console.log(config.pm))
-.catch((err) => console.error(err));
-
-function writePostmanFile(json) {
-    if(json) {
-        var result = converter.convert(json);
-        if('passed' === result.status) {
-            var now = +new Date();
-            fs.writeFile(process.env.POSTMAN_JSON_FILENAME_PREFIX + '_' + now + '.json', JSON.stringify(result), 'utf8',  function(err) {
-                if(err) {
-                    console.error(err);
-                    throw err;
-                } else {
-                    console.log('WOOT WOOT!');
-                    return;
-                }
-            });
-        }
-    }
+const convert = () => {
+    getSwaggerSpecFile(swaggerSpecUri)
+    .then((swagg) => {
+        return JSON.parse(swagg);
+    })
+    .then(createMeta)
+    .then(createFolders)
+    .then(createItems)
+    .then((config) => console.log(config.pm))
+    .then(writePostmanFile)
+    .catch((err) => console.error(err));
 }
 
-function convert(swaggerJSON, cb) {
-    if(!swaggerJSON || !cb) {
-        console.error('convert expects swaggerJSON and callback as parameters');
-    } else {
-        // Define Postman Folders based on provided mapping but add graceful defaults
-    }
+const writePostmanFile = function(json) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(generatePostmanCollectionOutputFilename(), JSON.stringify(json), 'utf8',  function(err) {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(filename);
+            }
+        });
+};
+
+const generatePostmanCollectionOutputFilename = function() => {
+    let prefix = process.env.POSTMAN_OUTPUT_FILENAME || 'postmanCollection';
+    let timestamp = (process.env.ADD_TIMESTAMP_TO_POSTMAN_OUTPUT_FILENAME) ? `_${new Date();}_` : '';
+    let suffix = (process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX) ? '_' + process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX + '.json';
+    return prefix + timestamp + suffix;
 }
 
 /**
