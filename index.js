@@ -99,8 +99,9 @@ const createMeta = function(swagg, postman) {
     return Promise.resolve({swg: swagg, pm:postman});
 }
 
-// Build the Postman Collection Directory Structures
+// Generate Folders (per the schema, folders are items)
 const createFolders = function(config) {
+    //TODO: Might want to refactor this and createItems() to be a single method which can identify if the item is a folder or actual item by duck-typing (recursion to save loop-cycles?)
     console.log('createDirs');
     try {
         let folders = [];
@@ -123,6 +124,80 @@ const createFolders = function(config) {
     return Promise.resolve(config);
 }
 
+// Populate Items from Swagger Paths into Folder context where applicable
+const createItems = function(config) {
+    console.log('createItems');
+    try {
+        let items = [];
+        //TODO: Implement the createReqItem(path) to create the necessary structure for the Request Item
+        //TODO: Need to make sure to address if the paths['pathString'].tags[0] property matches, push() into the appropriate postman.items.items array
+        //TODO: Test that items added into the Postman.items.items array are in the appropriate order
+        let pathsObj = config.swg.paths;
+        let pathNames = Reflect.ownKeys(pathsObj);
+
+        config.swg.paths.forEach((path, idx, arr) => {
+            console.log('Path: ', path);
+            let item = {};
+            item.name = path.summary;
+            item['events'] = [];
+            item['request'] = {};
+            item['responses'] = [];
+        });
+    } catch(e) {
+        return Promise.reject(e);
+    }
+
+    return Promise.resolve(config);
+};
+
+
+/**
+  * Item Schema
+  *
+  * Generate Request Item
+  * 
+  * "id"
+  * "name"
+  * [events[
+  * {request}
+  * [responses]
+**/
+const createReqItem = function(path) {
+    console.log('createReqItem');
+    try {
+        let req = {};
+        reqItem['name'] = path['name'];
+        reqItem['event'] = [];
+        reqItem['request'] = {};
+        reqItem['response'] = [];
+    } catch(e) {
+    }
+
+    return reqItem;
+};
+
+/** 
+  * urlBuilder
+**/
+const urlBuilder = (domain) => {
+    domain = domain ? domain : process.env.HOST;
+    let parts = [];
+    let proxy = new Proxy(() => {
+        let retrunValue = domain + '/' + parts.join('/');
+        parts = [];
+        return returnValue;
+    }, {
+        has: () => {
+            return true;
+        },
+        get: (object, prop) => {
+            parts.push(prop);
+            return proxy;
+        },
+    });
+    return proxy;
+};
+
 // Write Postman Collection JSON to filename specified
 const writePostmanCollection = function(json) {
     return new Promise((resolve, reject) => {
@@ -139,6 +214,7 @@ getSwaggerFromUri(swaggerSpecUri)
 })
 .then(createMeta)
 .then(createFolders)
+.then(createItems)
 .then((config) => console.log(config.pm))
 .catch((err) => console.error(err));
 
