@@ -1,48 +1,4 @@
 'use strict';
-/**
-  * Postman schema reference (https://schema.getpostman.com/json/collection/v2/docs/)
-  *
-  * variables (array) of Variable objects - Variables can be defined and referenced from any part of a request
-    * id (string) - Variable ID is a unique user-defined value to identify the variable within a collection (similar to var `name`)
-    * value (JS Data Type) - The value that a variable holds in this collection.
-    * type (string) - Can have multiple types, this field specifies the type of the variable
-    * name (string) - Variable name (used in the replacement strings)
-  * info (object) - Meta data about the collection
-    * name (string) - Collection Name
-    * _postman_id (string) - Postman Collection ID (load from environment variable)
-    * description (string) - Describe the Postman Collection
-    * schema (string) - https://schema.getpostman.com/json/collection/v2.0.0/collection.json
-    * version (string) - semver format
-  * items (array) of Folders in the Postman Collection
-    * name (string) - 
-    * description (string) - 
-    * items (array) of API Requests
-    * auth (object)
-  * events (array) of Event Objects
-    * listen (string) - Can be set to `test` or `prerequest` for test scripts or pre-request scripts respectively
-    * script (string) - JS code used to perform setup/teardown operations on a particular response
-    * disabled (boolean) - Is the event disabled? Defaults to enabled
-**/
-
-/**
-  * Swagger schema reference (http://swagger.io/specification/)
-  *
-  * swagger (string) - version of Swagger itself
-  * info (object) - Meta data about the spec
-  * host (string) - Host portion of URI
-  * basePath (string) - Base path where API is served relative to host
-  * schemes (string) - Transfer protocol of the API
-  * consumes (string) - List of MIME types the APIs can consume (global to all APIs, but can be overridden on specific API calls)
-  * produces (string) - Inverse of consumes
-  * paths [Paths Object] - The available paths and operations for the API
-  * definitions [Definitions Object] - An object to hold data types produced and consumed by operations
-  * parameters [Parameters Definitions Object] - Object to hold parameters that can be used across operations (does not define global params for all ops)
-  * responses [Responses Definitions Object] - Object to hold responses that can be used across operations (does not define global responses for all ops)
-  * securityDefinitions [securityDefinitionsObject] - Security scheme definitions that can be used across the spec
-  * tags [Tag Object] - List of tags used by spec with additional metadata. Order of tags can be used to reflect on their order by the parsing tools. Not all tags used by Operation Object must be declared. Undeclared tags may be organized randomly or based on tool logic. Must be unique 
-  * externalDocs ExternalDocumentationObject - Additional external docs
-**/
-
 
 // Deps
 require('dotenv').config();
@@ -50,16 +6,26 @@ require('dotenv').config();
 // Vars
 const swaggerSpecUri = process.env.RC_SWAGGER_SPEC_URI;
 
-// Fetch the RC Swagger Spec
-const getSwaggerFromUri = function(url) {
-    // Return new pending promise
+// Get Swagger Spec using HTTP[S], or from local file system
+const getSwaggerSpecFile = (swaggerSpec = process.env.SWAGGER_SPEC, ...opts = {}) => {
+    if(swaggerSpec.startsWith('http://', 1) || swaggerSpec.startsWith('https://')) {
+        // Load from  web server
+        return readHttpFile(swaggerSpec);
+    } else {
+        // Load from local file system
+        return readLocalFile(swaggerSpec, opts);
+    }
+};
+
+// Get file over HTTP[S]
+const readHttpFile = (uri) => {
     return new Promise((resolve, reject) => {
-    if(!url || '' === url) reject(new Error('getSwaggerFromUri must be passed a string representing the URI to the Swagger Specification'));
+        if(!uri || '' === uri) reject(new Error('Missing argument `uri`'));
         const lib = url.startsWith('https') ? require('https') : require('http');
         const request = lib.get(url, (response) => {
             // Handle HTTP errors
             if(response.statusCode < 200 || response.statusCode > 299) {
-                reject(new Error('Failed to load URL, status code: ', response.statusCode));
+                reject(new Error('Failed to load URL, status code: ${response.statusCode}'));
             }
             // Placeholder for chunked response
             const body = [];
@@ -67,11 +33,27 @@ const getSwaggerFromUri = function(url) {
                 body.push(chunk);
             });
             response.on('end', () => {
+                console.log('Swagger Spec file downloaded.');
                 resolve(body.join(''));
             });
         });
         request.on('error', (err) => {
             reject(err);
+        });
+    });
+};
+
+// Get file from local file system, default filename is `swaggerSpec.json`
+const readLocalFile = (file = './swaggerSpec.json', ...opts = {}) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(file, opts, (err, data) => {
+            if(err) {
+                console.error(err);
+                reject(err);
+            } else {
+                console.log('Swagger Spec file loaded.');
+                resolve(data);
+            }
         });
     });
 };
@@ -243,4 +225,48 @@ function convert(swaggerJSON, cb) {
         // Define Postman Folders based on provided mapping but add graceful defaults
     }
 }
+
+/**
+  * Postman schema reference (https://schema.getpostman.com/json/collection/v2/docs/)
+  *
+  * variables (array) of Variable objects - Variables can be defined and referenced from any part of a request
+    * id (string) - Variable ID is a unique user-defined value to identify the variable within a collection (similar to var `name`)
+    * value (JS Data Type) - The value that a variable holds in this collection.
+    * type (string) - Can have multiple types, this field specifies the type of the variable
+    * name (string) - Variable name (used in the replacement strings)
+  * info (object) - Meta data about the collection
+    * name (string) - Collection Name
+    * _postman_id (string) - Postman Collection ID (load from environment variable)
+    * description (string) - Describe the Postman Collection
+    * schema (string) - https://schema.getpostman.com/json/collection/v2.0.0/collection.json
+    * version (string) - semver format
+  * items (array) of Folders in the Postman Collection
+    * name (string) - 
+    * description (string) - 
+    * items (array) of API Requests
+    * auth (object)
+  * events (array) of Event Objects
+    * listen (string) - Can be set to `test` or `prerequest` for test scripts or pre-request scripts respectively
+    * script (string) - JS code used to perform setup/teardown operations on a particular response
+    * disabled (boolean) - Is the event disabled? Defaults to enabled
+**/
+
+/**
+  * Swagger schema reference (http://swagger.io/specification/)
+  *
+  * swagger (string) - version of Swagger itself
+  * info (object) - Meta data about the spec
+  * host (string) - Host portion of URI
+  * basePath (string) - Base path where API is served relative to host
+  * schemes (string) - Transfer protocol of the API
+  * consumes (string) - List of MIME types the APIs can consume (global to all APIs, but can be overridden on specific API calls)
+  * produces (string) - Inverse of consumes
+  * paths [Paths Object] - The available paths and operations for the API
+  * definitions [Definitions Object] - An object to hold data types produced and consumed by operations
+  * parameters [Parameters Definitions Object] - Object to hold parameters that can be used across operations (does not define global params for all ops)
+  * responses [Responses Definitions Object] - Object to hold responses that can be used across operations (does not define global responses for all ops)
+  * securityDefinitions [securityDefinitionsObject] - Security scheme definitions that can be used across the spec
+  * tags [Tag Object] - List of tags used by spec with additional metadata. Order of tags can be used to reflect on their order by the parsing tools. Not all tags used by Operation Object must be declared. Undeclared tags may be organized randomly or based on tool logic. Must be unique 
+  * externalDocs ExternalDocumentationObject - Additional external docs
+**/
 
