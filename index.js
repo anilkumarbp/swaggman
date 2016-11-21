@@ -1,19 +1,39 @@
+/**
+  * SwaggMan
+  *
+  * Description: Simple tool for converting Swagger2 spec to Postman2 Collection Spec
+  * Author: Benjamin Dean (https://github.com/bdeanindy)
+  * Postman schema reference (https://schema.getpostman.com/json/collection/v2/docs/)
+  * Swagger schema reference (http://swagger.io/specification/)
+**/
+
 'use strict';
 
 // Deps
 require('dotenv').config();
+const fs = require('fs');
+const uuid = require('node-uuid');
 
-// Vars
-const swaggerSpecUri = process.env.RC_SWAGGER_SPEC_URI;
+// App Vars
+let swaggerJSON = null;
+// Based on Postman 2 Schema
+let postmanJSON = {
+    info      : {},
+    variables : [],
+    items     : [],
+    events    : [],
+    auth      : {}
+};
 
 // Get Swagger Spec using HTTP[S], or from local file system
-const getSwaggerSpecFile = (swaggerSpec = process.env.SWAGGER_SPEC, ...opts = {}) => {
+const getSwaggerSpecFile = (swaggerSpec) => {
+    swaggerSpec = swaggerSpec || process.env.SWAGGER_SPEC;
     if(swaggerSpec.startsWith('http://', 1) || swaggerSpec.startsWith('https://')) {
         // Load from  web server
         return readHttpFile(swaggerSpec);
     } else {
         // Load from local file system
-        return readLocalFile(swaggerSpec, opts);
+        return readLocalFile(swaggerSpec);
     }
 };
 
@@ -21,8 +41,8 @@ const getSwaggerSpecFile = (swaggerSpec = process.env.SWAGGER_SPEC, ...opts = {}
 const readHttpFile = (uri) => {
     return new Promise((resolve, reject) => {
         if(!uri || '' === uri) reject(new Error('Missing argument `uri`'));
-        const lib = url.startsWith('https') ? require('https') : require('http');
-        const request = lib.get(url, (response) => {
+        const lib = uri.startsWith('https') ? require('https') : require('http');
+        const request = lib.get(uri, (response) => {
             // Handle HTTP errors
             if(response.statusCode < 200 || response.statusCode > 299) {
                 reject(new Error('Failed to load URL, status code: ${response.statusCode}'));
@@ -43,10 +63,11 @@ const readHttpFile = (uri) => {
     });
 };
 
-// Get file from local file system, default filename is `swaggerSpec.json`
-const readLocalFile = (file = './swaggerSpec.json', ...opts = {}) => {
+// Get file from local file system, default filename is `swagger.json` (per the Swagger 2.0 convention for the spec)
+const readLocalFile = (file) => {
+    file = file || './swagger.json';
     return new Promise((resolve, reject) => {
-        fs.readFile(file, opts, (err, data) => {
+        fs.readFile(file, (err, data) => {
             if(err) {
                 console.error(err);
                 reject(err);
@@ -58,104 +79,131 @@ const readLocalFile = (file = './swaggerSpec.json', ...opts = {}) => {
     });
 };
 
-// Build the Postman Collection Meta Data
-const createMeta = function(swagg, postman) {
-    console.log('createMeta');
-    postman       = postman || {};
+// Converts Swagger Info to Postman Collection Info, allowing developers to override defaults with environment configs
+const convertInfo = function() {
+    console.log('convertInfo');
+    let info = {};
     try {
-        // Define base Postman schema
-        postman.info        = {};
-        postman.variables   = [];
-        postman.items       = [];
-        postman.events      = [];
-
         // Define Postman Info from Environment Variables but default to Swagger properties
-        postman.info.name           = (process.env.TITLE) ? process.env.TITLE : swagg.info.title;
-        postman.info.description    = (process.env.DESCRIPTION) ? process.env.DESCRIPTION : swagg.info.description;
-        postman.info.version        = (process.env.POSTMAN_SCHEMA_VERSION) ? process.env.POSTMAN_SCHEMA_VERSION : swagg.info.version;
-        postman.info.schema         = process.env.POSTMAN_SCHEMA_Uri || "https://schema.getpostman.com/json/collection/v2.0.0/collection.json";
+        info._postman_id    = process.env.POSTMAN_ID            || uuid.v4();
+        info.version        = process.env.API_VERSION           || swaggerJSON.info.version;
+        info.name           = process.env.POSTMAN_TITLE         || swaggerJSON.info.title;
+        info.schema         = process.env.POSTMAN_SCHEMA_URI    || 'https://schema.getpostman.com/json/collection/v' + process.env.POSTMAN_SCHEMA_SEMVER + '/collection.json';
+        info.description    = process.env.POSTMAN_DESCRIPTION   || swaggerJSON.info.description;
+        // No place to map in Postman, adding to description 
+        if(swaggerJSON.info.termsOfService) info.description    += '\n\n' + swaggerJSON.info.termsOfService;
+        if(swaggerJSON.info.contact) info.description           += '\n\n' + swaggerJSON.info.contact;
+        if(swaggerJSON.info.license) info.description           += '\n\n' + swaggerJSON.info.license;
     } catch(e) {
         return Promise.reject(e);
     }
 
-    return Promise.resolve({swg: swagg, pm:postman});
+    console.log('Info: ', info);
+    return Promise.resolve(info);
 }
 
-// Generate Folders (per the schema, folders are items)
-const createFolders = function(config) {
-    //TODO: Might want to refactor this and createItems() to be a single method which can identify if the item is a folder or actual item by duck-typing (recursion to save loop-cycles?)
-    console.log('createDirs');
-    try {
-        let folders = [];
-        config.swg.tags.forEach((tag) => {
-            console.log('Tag: ', tag);
-            let folder = {};
-            if(tag.name) folder.name = tag.name;
-            if(tag.description) folder.description = tag.description;
-            if(tag.externalDocs) {
-                folder.description += '\n\n';
-                folder.description += 'Additional Information: ' + tag.externalDocs.description + ' - ' + tag.externalDocs.url;
-            }
-            config.pm.items.push(folder);
-        });
+// Generate Folders (Swagger Tags become Postman Folders)
+const generateFolders = () => {
+    console.log('generateFolders');
+    let folders = [];
+    let tags = swaggerJSON.tags;
+    console.log('swaggerJSON.tags: ', swaggerJSON.tags);
+    if(!tags && process.env.IMPLEMENT_TAGS_AS_FOLDERS) {
+        return Promise.reject(new Error('generateFolders expects swaggerJSON.tags to be an array and contain elements, or environment variable IMPLEMENT_TAGS_AS_FOLDERS to be set to false'));
+    } else {
+        // Populate Postman Collection with folders
+        for(let tag of tags) {
+            console.log('Tag: ', tag.name);
+            folders.push(convertTagToFolder(tag));
+        }
+    }
+    console.log('Folders: ', folders);
+    return Promise.resolve(folders);
+};
 
+// Generate Items
+const generateItems = () => {
+    console.log('generateItems');
+    let postmanItems = [];
+    try {
+        // If we do not have a path, we are generating a ROOT Item
+        // If we have a path, but no verb, we are generating a FOLDER Item (need to iterate over the path to generate items for each verb)
+        // Add items to the appropriate FOLDER(S) based on path[VERB]['tags'][...FOLDER_NAMES]
+        // Iterate over the paths
+        //console.log('swaggerJSON.paths: ', swaggerJSON.paths);
+        let paths = Object.keys(swaggerJSON.paths); // Swagger.paths[routeName] which is the routeName
+        //console.log('Iterating paths: ', paths);
+        for(let path of paths) {
+            // Iterate the verbs for each path
+            let verbs = Object.keys(swaggerJSON.paths[path]);
+            console.log('Building Items for Path: ', path);
+            for(let verb of verbs) {
+                // Create new item for each verb within each path
+                let item = {};
+                console.log('Creating Item for Verb: ', verb);
+                // Generate Item
+                item.name = swaggerJSON.paths[path][verb].summary;
+                item.id = swaggerJSON.paths[path][verb].operationId;
+                item['events'] = [];
+                item['request'] = generateRequestObject(path, verb);
+                item['responses'] = [];
+                //console.log('Item: ', item);
+                postmanItems.push(item);
+                console.log('Done with items');
+            }
+            console.log('Done with paths');
+        }
+        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
     } catch(e) {
         return Promise.reject(e)
     }
-    
-    return Promise.resolve(config);
-}
-
-// Populate Items from Swagger Paths into Folder context where applicable
-const createItems = function(config) {
-    console.log('createItems');
-    try {
-        let items = [];
-        //TODO: Implement the createReqItem(path) to create the necessary structure for the Request Item
-        //TODO: Need to make sure to address if the paths['pathString'].tags[0] property matches, push() into the appropriate postman.items.items array
-        //TODO: Test that items added into the Postman.items.items array are in the appropriate order
-        let pathsObj = config.swg.paths;
-        let pathNames = Reflect.ownKeys(pathsObj);
-
-        config.swg.paths.forEach((path, idx, arr) => {
-            console.log('Path: ', path);
-            let item = {};
-            item.name = path.summary;
-            item['events'] = [];
-            item['request'] = {};
-            item['responses'] = [];
-        });
-    } catch(e) {
-        return Promise.reject(e);
-    }
-
-    return Promise.resolve(config);
+    return Promise.resolve(postmanItems);
 };
 
-
-/**
-  * Item Schema
-  *
-  * Generate Request Item
-  * 
-  * "id"
-  * "name"
-  * [events[
-  * {request}
-  * [responses]
-**/
-const createReqItem = function(path) {
+const generateRequestObject = (path, verb) => {
     console.log('createReqItem');
-    try {
-        let req = {};
-        reqItem['name'] = path['name'];
-        reqItem['event'] = [];
-        reqItem['request'] = {};
-        reqItem['response'] = [];
-    } catch(e) {
-    }
+    return {
+        url: generateUrlObject(path, verb),
+        auth: path['auth'],
+        method: verb,
+        headers: [],
+        body: {}
+    };
+};
 
-    return reqItem;
+const generateUrlObject = (path, verb) => {
+    console.log('generateUrlObject');
+    // TODO: Add config for devs to set `url` to a string instead of an object
+    // TODO: Add config for variables
+    // TODO: Add generateUrlVariables method
+    return {
+        protocol: '',
+        domain: [],
+        path: [],
+        port: '',
+        query: generateQueryParamObject(path, verb),
+        hash: '',
+        variables: []
+    };
+};
+
+const generateQueryParamObject = (path, verb) => {
+};
+
+const generateEventObject = (path) => {
+};
+
+const generateVariableObject = () => {
+};
+
+const convertTagToFolder = (tag) => {
+    console.log('convertTagToFolder');
+    return {
+        name: tag.name,
+        description: tag.description,
+        items: [],
+        auth: process.env.POSTMAN_FOLDER_AUTH_HELPER
+    };
 };
 
 /** 
@@ -167,11 +215,11 @@ const createReqItem = function(path) {
   * let ringCentral = urlBuilder('https://platform.devtest.ringcentral.com/restapi/v1.0');
   * ringCentral.account.~.extension.~.presence; // https://platform.devtest.ringcentral.com/restapi/v1.0/account/~/extension/~/presence
 **/
-const urlBuilder = (domain) => {
-    domain = domain ? domain : process.env.HOST;
+const urlBuilder = (base) => {
+    base = base ? base : process.env.HOST;
     let parts = [];
     let proxy = new Proxy(() => {
-        let retrunValue = domain + '/' + parts.join('/');
+        let retrunValue = base + '/' + parts.join('/');
         parts = [];
         return returnValue;
     }, {
@@ -186,88 +234,54 @@ const urlBuilder = (domain) => {
     return proxy;
 };
 
+// Generates the filename of the Postman Collection which will be written to disk. Defaults to 'postmanCollection_' + timestamp + '.json'
+const generatePostmanCollectionOutputFilename = () => {
+    console.log('generatePostmanCollectionOutputFilename');
+    let prefix = process.env.POSTMAN_OUTPUT_FILENAME || 'postmanCollection';
+    let timestamp = (process.env.INCLUDE_TIMESTAMP_IN_POSTMAN_OUTPUT_FILENAME) ? '_' + +new Date() + '_' : '';
+    let suffix = (process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX) ? '_' + process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX : '';
+    let filename = prefix + timestamp + suffix + '.json';
+    console.log('Output file name will be: ', filename);
+    return prefix + timestamp + suffix;
+}
+
 // Write Postman Collection JSON to filename specified
-const writePostmanCollection = function(json) {
+const writePostmanCollection = function() {
+    console.log('writePostmanCollection');
     return new Promise((resolve, reject) => {
-        fs.writeFile(process.env.POSTMAN_JSON_FILENAME_PREFIX + '_' + now + '.json', JSON.stringify(result), 'utf8', (err) => {
+        fs.writeFile(generatePostmanCollectionOutputFilename(), JSON.stringify(postmanJSON), 'utf8', (err) => {
             if(err) reject(err);
-            else resolve(data);
+            else resolve('File written to disk!');
         });
     });
 };
 
-const convert = () => {
-    getSwaggerSpecFile(swaggerSpecUri)
+const convert = (swaggerSpec) => {
+    swaggerSpec = swaggerSpec || process.env.SWAGGER_SPEC;
+    if(!swaggerSpec || '' === swaggerSpec) {
+        throw new Error('Missing the swagger specification file reference');
+    }
+    getSwaggerSpecFile(swaggerSpec)
     .then((swagg) => {
-        return JSON.parse(swagg);
+        swaggerJSON = JSON.parse(swagg);
     })
-    .then(createMeta)
-    .then(createFolders)
-    .then(createItems)
-    .then((config) => console.log(config.pm))
-    .then(writePostmanFile)
+    .then(convertInfo)
+    .then((info) => {
+        if(info) postmanJSON.info = info;
+    })
+    .then(generateFolders)
+    .then((folders) => {
+        if(folders && folders.length) postmanJSON.items = folders;
+    })
+    .then(generateItems)
+    .then((items) => {
+        if(items && 0 < items.length) postmanJSON.items.concat(items);
+    })
+    .then(writePostmanCollection)
+    .then((msg) => {
+        if(msg) console.log(msg);
+    })
     .catch((err) => console.error(err));
 }
 
-const writePostmanFile = function(json) => {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(generatePostmanCollectionOutputFilename(), JSON.stringify(json), 'utf8',  function(err) {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(filename);
-            }
-        });
-};
-
-const generatePostmanCollectionOutputFilename = function() => {
-    let prefix = process.env.POSTMAN_OUTPUT_FILENAME || 'postmanCollection';
-    let timestamp = (process.env.ADD_TIMESTAMP_TO_POSTMAN_OUTPUT_FILENAME) ? `_${new Date();}_` : '';
-    let suffix = (process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX) ? '_' + process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX + '.json';
-    return prefix + timestamp + suffix;
-}
-
-/**
-  * Postman schema reference (https://schema.getpostman.com/json/collection/v2/docs/)
-  *
-  * variables (array) of Variable objects - Variables can be defined and referenced from any part of a request
-    * id (string) - Variable ID is a unique user-defined value to identify the variable within a collection (similar to var `name`)
-    * value (JS Data Type) - The value that a variable holds in this collection.
-    * type (string) - Can have multiple types, this field specifies the type of the variable
-    * name (string) - Variable name (used in the replacement strings)
-  * info (object) - Meta data about the collection
-    * name (string) - Collection Name
-    * _postman_id (string) - Postman Collection ID (load from environment variable)
-    * description (string) - Describe the Postman Collection
-    * schema (string) - https://schema.getpostman.com/json/collection/v2.0.0/collection.json
-    * version (string) - semver format
-  * items (array) of Folders in the Postman Collection
-    * name (string) - 
-    * description (string) - 
-    * items (array) of API Requests
-    * auth (object)
-  * events (array) of Event Objects
-    * listen (string) - Can be set to `test` or `prerequest` for test scripts or pre-request scripts respectively
-    * script (string) - JS code used to perform setup/teardown operations on a particular response
-    * disabled (boolean) - Is the event disabled? Defaults to enabled
-**/
-
-/**
-  * Swagger schema reference (http://swagger.io/specification/)
-  *
-  * swagger (string) - version of Swagger itself
-  * info (object) - Meta data about the spec
-  * host (string) - Host portion of URI
-  * basePath (string) - Base path where API is served relative to host
-  * schemes (string) - Transfer protocol of the API
-  * consumes (string) - List of MIME types the APIs can consume (global to all APIs, but can be overridden on specific API calls)
-  * produces (string) - Inverse of consumes
-  * paths [Paths Object] - The available paths and operations for the API
-  * definitions [Definitions Object] - An object to hold data types produced and consumed by operations
-  * parameters [Parameters Definitions Object] - Object to hold parameters that can be used across operations (does not define global params for all ops)
-  * responses [Responses Definitions Object] - Object to hold responses that can be used across operations (does not define global responses for all ops)
-  * securityDefinitions [securityDefinitionsObject] - Security scheme definitions that can be used across the spec
-  * tags [Tag Object] - List of tags used by spec with additional metadata. Order of tags can be used to reflect on their order by the parsing tools. Not all tags used by Operation Object must be declared. Undeclared tags may be organized randomly or based on tool logic. Must be unique 
-  * externalDocs ExternalDocumentationObject - Additional external docs
-**/
-
+convert();

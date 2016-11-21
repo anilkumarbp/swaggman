@@ -2,6 +2,7 @@
 *.swp
 *.log
 node_modules
-rcPostmanCollection_*.json
+rcPostmanCollection*
+postmanCollection*
 ref
 .env
