@@ -122,9 +122,9 @@ const generateFolders = () => {
 };
 
 // Generate Items
-const generateItems = () => {
+const generateItems = (folders) => {
     console.log('generateItems');
-    let postmanItems = [];
+    let postmanItems = folders || [];
     try {
         // If we do not have a path, we are generating a ROOT Item
         // If we have a path, but no verb, we are generating a FOLDER Item (need to iterate over the path to generate items for each verb)
@@ -147,17 +147,25 @@ const generateItems = () => {
                 item['events'] = [];
                 item['request'] = generateRequestObject(path, verb);
                 item['responses'] = [];
-                //console.log('Item: ', item);
-                postmanItems.push(item);
-                console.log('Done with items');
+                // Map and insert item into proper folder
+                if(0 < folders.length) {
+                    postmanItems[findByAttr(folders, swaggerJSON.paths[path][verb].tags[0])].items.push(item);
+                } else {
+                    postmanItems.push(item);
+                }
             }
-            console.log('Done with paths');
         }
-        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
     } catch(e) {
         return Promise.reject(e)
     }
     return Promise.resolve(postmanItems);
+};
+
+const findByAttr = (array, attr, value) => {
+    for(let i = 0; i < array.length; i++) {
+        if(array[i].name.match(attr)) return i;
+    }
+    return -1;
 };
 
 const generateRequestObject = (path, verb) => {
@@ -176,18 +184,23 @@ const generateUrlObject = (path, verb) => {
     // TODO: Add config for devs to set `url` to a string instead of an object
     // TODO: Add config for variables
     // TODO: Add generateUrlVariables method
-    return {
-        protocol: '',
-        domain: [],
-        path: [],
-        port: '',
-        query: generateQueryParamObject(path, verb),
-        hash: '',
-        variables: []
-    };
+    if(process.env.API_BASE_URL_ENVIRONMENT_STRING) {
+        return process.env.API_BASE_URL_ENVIRONMENT_STRING;
+    } else {
+        return {
+            protocol: '',
+            domain: [],
+            path: [],
+            port: '',
+            query: generateQueryParamObject(path, verb),
+            hash: '',
+            variables: []
+        };
+    }
 };
 
 const generateQueryParamObject = (path, verb) => {
+    console.log('generateQueryParamObject');
 };
 
 const generateEventObject = (path) => {
@@ -242,7 +255,7 @@ const generatePostmanCollectionOutputFilename = () => {
     let suffix = (process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX) ? '_' + process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX : '';
     let filename = prefix + timestamp + suffix + '.json';
     console.log('Output file name will be: ', filename);
-    return prefix + timestamp + suffix;
+    return filename;
 }
 
 // Write Postman Collection JSON to filename specified
@@ -270,12 +283,11 @@ const convert = (swaggerSpec) => {
         if(info) postmanJSON.info = info;
     })
     .then(generateFolders)
-    .then((folders) => {
-        if(folders && folders.length) postmanJSON.items = folders;
-    })
     .then(generateItems)
     .then((items) => {
-        if(items && 0 < items.length) postmanJSON.items.concat(items);
+        console.log('Completed Items: ', items);
+        postmanJSON.items = items;
+        console.log('PostmanJSON Items: ', postmanJSON.items);
     })
     .then(writePostmanCollection)
     .then((msg) => {
