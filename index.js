@@ -143,7 +143,7 @@ const generateItems = (folders) => {
                 console.log('Creating Item for Verb: ', verb);
                 // Generate Item
                 item.name = swaggerJSON.paths[path][verb].summary;
-                item.id = swaggerJSON.paths[path][verb].operationId;
+                item.id = swaggerJSON.paths[path][verb].operationId || uuid.v4; // If there is no unique identifier, create one
                 item['events'] = [];
                 item['request'] = generateRequestObject(path, verb);
                 item['responses'] = [];
@@ -174,7 +174,7 @@ const generateRequestObject = (path, verb) => {
         url: generateUrlObject(path, verb),
         auth: path['auth'],
         method: verb,
-        headers: [],
+        header: generateHeaderArray(path, verb),
         body: {}
     };
 };
@@ -207,6 +207,38 @@ const generateEventObject = (path) => {
 };
 
 const generateVariableObject = () => {
+};
+
+const generateHeaderArray = (path, verb) => {
+    console.log('generateHeadersArray');
+
+    let contentTypeValue = swaggerJSON.paths[path][verb].consumes;
+    let acceptValue = swaggerJSON.paths[path][verb].produces;
+    console.log('Consumes Val: ', contentTypeValue);
+    console.log('Accept Val: ', acceptValue);
+    let authHeaderValue = ( path.match(process.env.OAUTH_PATH_IDENTIFIER) )
+        ? 'Basic {{' + process.env.BASIC_AUTH_TEMPLATE_VALUE + '}}'
+        : 'Bearer {{' + process.env.ACCESS_TOKEN_TEMPLATE_VALUE + '}}'
+        ;
+    let authHeader = {key: 'Authorization', value: authHeaderValue};
+
+    let contentTypeHeader = ( contentTypeValue )
+        ? {key: 'Content-Type', value: contentTypeValue[0]}
+        : null
+        ;
+    let acceptHeader = ( acceptValue )
+        ? {key: 'Accept', value: acceptValue[0]}
+        : null
+        ;
+
+    let generatedHeaderArr = [];
+    if(authHeader) generatedHeaderArr.push(authHeader);
+    if(contentTypeHeader) generatedHeaderArr.push(contentTypeHeader);
+    if(acceptHeader) generatedHeaderArr.push(acceptHeader);
+
+    console.log('Generated Header Array: ', generatedHeaderArr);
+    return generatedHeaderArr;
+        
 };
 
 const convertTagToFolder = (tag) => {
