@@ -98,7 +98,7 @@ const convertInfo = function() {
         return Promise.reject(e);
     }
 
-    console.log('Info: ', info);
+    //console.log('Info: ', info);
     return Promise.resolve(info);
 }
 
@@ -107,17 +107,17 @@ const generateFolders = () => {
     console.log('generateFolders');
     let folders = [];
     let tags = swaggerJSON.tags;
-    console.log('swaggerJSON.tags: ', swaggerJSON.tags);
+    //console.log('swaggerJSON.tags: ', swaggerJSON.tags);
     if(!tags && process.env.IMPLEMENT_TAGS_AS_FOLDERS) {
         return Promise.reject(new Error('generateFolders expects swaggerJSON.tags to be an array and contain elements, or environment variable IMPLEMENT_TAGS_AS_FOLDERS to be set to false'));
     } else {
         // Populate Postman Collection with folders
         for(let tag of tags) {
-            console.log('Tag: ', tag.name);
+            //console.log('Tag: ', tag.name);
             folders.push(convertTagToFolder(tag));
         }
     }
-    console.log('Folders: ', folders);
+    //console.log('Folders: ', folders);
     return Promise.resolve(folders);
 };
 
@@ -136,15 +136,15 @@ const generateItems = (folders) => {
         for(let path of paths) {
             // Iterate the verbs for each path
             let verbs = Object.keys(swaggerJSON.paths[path]);
-            console.log('Building Items for Path: ', path);
+            //console.log('Building Items for Path: ', path);
             for(let verb of verbs) {
                 // Create new item for each verb within each path
                 let item = {};
-                console.log('Creating Item for Verb: ', verb);
+                //console.log('Creating Item for Verb: ', verb);
                 // Generate Item
                 item.name = swaggerJSON.paths[path][verb].summary;
                 item.id = swaggerJSON.paths[path][verb].operationId || uuid.v4; // If there is no unique identifier, create one
-                item['events'] = [];
+                item['events'] = generateEventArray(path, verb);
                 item['request'] = generateRequestObject(path, verb);
                 item['responses'] = [];
                 // Map and insert item into proper folder
@@ -185,7 +185,7 @@ const generateUrlObject = (path, verb) => {
     // TODO: Add config for variables
     // TODO: Add generateUrlVariables method
     if(process.env.API_BASE_URL_ENVIRONMENT_STRING) {
-        return process.env.API_BASE_URL_ENVIRONMENT_STRING;
+        return process.env.API_BASE_URL_ENVIRONMENT_STRING + path;
     } else {
         return {
             protocol: '',
@@ -203,7 +203,14 @@ const generateQueryParamObject = (path, verb) => {
     console.log('generateQueryParamObject');
 };
 
-const generateEventObject = (path) => {
+const generateEventArray = (path, verb) => {
+    // TODO: Improve this
+    if(!path.match(/oauth/)) {
+        return [];
+    } else {
+        // TODO: Improve this by loading all prerequest scripts dynamically
+        return [{listen: 'prerequest', script: {type: process.env.BASIC_AUTH_PREREQUEST_SCRIPT_TYPE, exec: require('./prerequestScripts/' + process.env.BASIC_AUTH_PREREQUEST_SCRIPT)}}];
+    }
 };
 
 const generateVariableObject = () => {
@@ -214,8 +221,6 @@ const generateHeaderArray = (path, verb) => {
 
     let contentTypeValue = swaggerJSON.paths[path][verb].consumes;
     let acceptValue = swaggerJSON.paths[path][verb].produces;
-    console.log('Consumes Val: ', contentTypeValue);
-    console.log('Accept Val: ', acceptValue);
     let authHeaderValue = ( path.match(process.env.OAUTH_PATH_IDENTIFIER) )
         ? 'Basic {{' + process.env.BASIC_AUTH_TEMPLATE_VALUE + '}}'
         : 'Bearer {{' + process.env.ACCESS_TOKEN_TEMPLATE_VALUE + '}}'
@@ -236,7 +241,7 @@ const generateHeaderArray = (path, verb) => {
     if(contentTypeHeader) generatedHeaderArr.push(contentTypeHeader);
     if(acceptHeader) generatedHeaderArr.push(acceptHeader);
 
-    console.log('Generated Header Array: ', generatedHeaderArr);
+    //console.log('Generated Header Array: ', generatedHeaderArr);
     return generatedHeaderArr;
         
 };
@@ -286,7 +291,7 @@ const generatePostmanCollectionOutputFilename = () => {
     let timestamp = (process.env.INCLUDE_TIMESTAMP_IN_POSTMAN_OUTPUT_FILENAME) ? '_' + +new Date() + '_' : '';
     let suffix = (process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX) ? '_' + process.env.POSTMAN_OUTPUT_FILENAME_SUFFIX : '';
     let filename = prefix + timestamp + suffix + '.json';
-    console.log('Output file name will be: ', filename);
+    //console.log('Output file name will be: ', filename);
     return filename;
 }
 
@@ -317,9 +322,9 @@ const convert = (swaggerSpec) => {
     .then(generateFolders)
     .then(generateItems)
     .then((items) => {
-        console.log('Completed Items: ', items);
+        //console.log('Completed Items: ', items);
         postmanJSON.items = items;
-        console.log('PostmanJSON Items: ', postmanJSON.items);
+        //console.log('PostmanJSON Items: ', postmanJSON.items);
     })
     .then(writePostmanCollection)
     .then((msg) => {
