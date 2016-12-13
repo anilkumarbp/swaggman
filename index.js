@@ -209,7 +209,7 @@ const generateEventArray = (path, verb) => {
         return [];
     } else {
         // TODO: Improve this by loading all prerequest scripts dynamically
-        return [{listen: 'prerequest', script: {type: process.env.BASIC_AUTH_PREREQUEST_SCRIPT_TYPE, exec: require('./prerequestScripts/' + process.env.BASIC_AUTH_PREREQUEST_SCRIPT)}}];
+        return [{listen: 'prerequest', script: {type: process.env.BASIC_AUTH_PREREQUEST_SCRIPT_TYPE, exec: require(process.env.PREREQUEST_SCRIPTS_PATH + '/' + process.env.BASIC_AUTH_PREREQUEST_SCRIPT)}}];
     }
 };
 
