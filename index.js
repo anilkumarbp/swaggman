@@ -13,6 +13,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const uuid = require('node-uuid');
+const helpers = require('./helpers');
 
 // App Vars
 let swaggerJSON = null;
@@ -204,13 +205,20 @@ const generateQueryParamObject = (path, verb) => {
 };
 
 const generateEventArray = (path, verb) => {
-    // TODO: Improve this
-    if(!path.match(/oauth/)) {
-        return [];
-    } else {
-        // TODO: Improve this by loading all prerequest scripts dynamically
-        return [{listen: 'prerequest', script: {type: process.env.BASIC_AUTH_PREREQUEST_SCRIPT_TYPE, exec: require(process.env.PREREQUEST_SCRIPTS_PATH + '/' + process.env.BASIC_AUTH_PREREQUEST_SCRIPT)}}];
+    let eventArr = [];
+    if(helpers.prerequest.hasOwnProperty(path)) {
+        eventArr.push({
+            listen: 'prerequest',
+            script: require('./' + process.env.HELPERS_DIR + '/prerequestScripts/' + helpers.prerequest[path])
+        });
     }
+    if(helpers.test.hasOwnProperty(path)) {
+        eventArr.push({
+            listen: 'test',
+            script: require('./' + process.env.HELPERS_DIR + '/testScripts/' + helpers.test[path])
+        });
+    }
+    return eventArr;
 };
 
 const generateVariableObject = () => {
