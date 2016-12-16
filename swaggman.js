@@ -17,9 +17,15 @@ class SwaggMan {
         //this.swaggerJSON = swaggerLoader.getSpecification(this.swaggerSpec);
     }
 
-    convert (swaggerSpec){
+    convert (swaggerSpec) {
+        swaggerSpec = swaggerSpec || this.swaggerSpec;
+        if (!swaggerSpec) {
+            throw new Error ('convert method requires a string parameter which is the path or URI to your Swagger specification', 'convert() requires a string parameter to Swagger specification file or URI');
+        }
+    /*
         swaggerSpec = swaggerSpec || this.swwaggerSpec;
         if(!swaggerSpec) throw new Error('Swagger specification file or URI is required');
+    */
     }
 
 }
