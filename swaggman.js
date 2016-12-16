@@ -52,7 +52,6 @@ class SwaggMan {
     // SETTERS
     set swaggerSpecLocation(value) {
         this._swaggerSpecLocation = value;
-        //console.log('swaggerSpecLocation changed to: ', value);
     }
 
     set saveToFile(value) {

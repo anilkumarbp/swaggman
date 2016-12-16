@@ -1,0 +1,86 @@
+module.exports = {
+    swagger: "swagger_string",
+    info: {
+        title: "title_string",
+        description: "description_string",
+        termsOfService: "termsOfService_string",
+        contact: {
+            name: "name_string",
+            url: "url_string",
+            email: "email_string"
+        },
+        license: {
+            name: "name_string",
+            url: "url_string"
+        },
+        version: "version_string"
+    },
+    host: "host_string",
+    basePath: "basePath_string",
+    schemes: "schemes_string",
+    consumes: "consumes_string",
+    produces: "produces_string",
+    paths: {
+        "/myPath": {
+            get: {
+                description: "description_string",
+                produces: [
+                    "application/json"
+                ],
+                responses: {
+                    "200": {
+                        description: "description
+                    }
+                },
+                tags: "tags_string",
+                summary: "summary_string",
+                externalDocs: {
+                    description: "description_string",
+                    url: "url_string"
+                },
+                operationId: "operationId_string",
+                consumes: "consumes_string",
+                parameters: {
+                    paramParam: {
+                        name: "param",
+                        in: "query",
+                        description: "description_string",
+                        required: true,
+                        type: "boolean",
+                        format: "boolean"
+                    }
+                },
+                schemes: "schemes_string",
+                deprecated: false,
+                security: {
+                }
+            }
+        }
+    },
+    definitions: {
+        tag: {
+            type: "type_string",
+            properties: {
+                id: {
+                    type: "type_string",
+                    format: "format_string"
+                },
+                name: {
+                    type: "type_string"
+                }
+            }
+        }
+    },
+    parameters: {
+    },
+    responses: {
+    },
+    securityDefinitions: {
+    },
+    security: {
+    },
+    tags: {
+    },
+    externalDocs: {
+    }
+};

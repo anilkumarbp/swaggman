@@ -1,7 +1,7 @@
 'use strict';
 
 const test = require('tape');
-let SwaggMan = require('../swaggman');
+const SwaggMan = require('../swaggman');
 
 test('Swaggman Class', (t) => {
     let swaggman = new SwaggMan();
@@ -44,3 +44,31 @@ test('Output location is configurable', (t) => {
     t.throws(() => swaggman.saveToFile = 1234, /saveToFile property expects type boolean/, 'saveToFile throws on invalid parameter types');
     t.end();
 });
+
+test('SwaggerJSON reference is maintained appropriately', (t) => {
+    let swaggman = new SwaggMan();
+    t.equal(swaggman.swaggerJSON, null, 'Should default to null');
+    t.test('====> during instantiation', (st) => {
+        let swaggman = new SwaggMan({swaggerSpecLocation: './swaggmanStub.json'});
+        st.equal(swaggman.swaggerSpecLocation, './swaggmanStub.json', 'When valid JSON value is provided');
+        //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
+        st.end();
+    });
+    t.test('====> on changes to `swaggerSpecLocation` property', (st) => {
+        let swaggman = new SwaggMan();
+        swaggman.swaggerSpecLocation = './swaggman.stub.json';
+        st.equal(swaggman.swaggerSpecLocation, './swaggman.stub.json', 'using valid JSON location file value');
+        st.end();
+    });
+    t.end();
+});
+
+/*
+test('Load Swagger Spec from file', (t) => {
+    let swaggman = new SwaggMan({swaggerSpecLocation: '../ref/RingCentral_Swagger_Basic_20161116.json'});
+    t.equal(swaggman.swaggerSpecLocation, '../ref/RingCentral_Swagger_Basic_20161116.json', 'Loads from constructor parameter');
+    t.equal(swaggman.swaggerJSON, {}, 'Loaded file stored as property `swaggerJSON`');
+    t.end();
+});
+*/
+//let swaggman = new SwaggMan('https://developers.ringcentral.com/api-explorer/latest/swagger-ring_basic.json');
