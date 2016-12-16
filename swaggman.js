@@ -1,3 +1,4 @@
+'use strict';
 /**
   * SwaggMan
   *
@@ -11,7 +12,7 @@
 
 class SwaggMan {
 
-    constructor(options) {
+    constructor(options = {}) {
         this.swaggerSpec = options.swaggerSpec || process.env.SWAGGER_SPEC;
         //this.swaggerJSON = swaggerLoader.getSpecification(this.swaggerSpec);
     }
@@ -22,3 +23,5 @@ class SwaggMan {
     }
 
 }
+
+module.exports = SwaggMan;
