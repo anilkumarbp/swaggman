@@ -70,5 +70,5 @@ test('Loads Swagger Spec from file', (t) => {
     t.equal(swaggman.swaggerJSON, {}, 'Loaded file stored as property `swaggerJSON`');
     t.end();
 });
+let swaggman = new SwaggMan('https://developers.ringcentral.com/api-explorer/latest/swagger-ring_basic.json');
 */
-//let swaggman = new SwaggMan('https://developers.ringcentral.com/api-explorer/latest/swagger-ring_basic.json');
