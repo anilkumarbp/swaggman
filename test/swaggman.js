@@ -19,9 +19,9 @@ test('Swaggman Class', (t) => {
 });
 
 test('Getters', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: 'abcdef'});
-    t.equal(swaggman.swaggerSpecLocation, 'abcdef' , 'swaggerSpecLocation');
-    t.equal(swaggman.swaggerJSON, null, 'swaggerJSON');
+    let swaggman = new SwaggMan({swaggerSpecLocation: './swaggerStub.json'});
+    t.equal(swaggman.swaggerSpecLocation, './swaggerStub.json' , 'swaggerSpecLocation');
+    t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
     t.equal(swaggman.saveToFile, true, 'saveToFile');
     t.equal(swaggman.outputFilename, '', 'outputFilename');
@@ -30,8 +30,8 @@ test('Getters', (t) => {
 
 test('Setters', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = 'abcdef';
-    t.equal(swaggman.swaggerSpecLocation, 'abcdef', 'swaggerSpecLocation setter exists');
+    swaggman.swaggerSpecLocation = './swaggerStub.json';
+    t.equal(swaggman.swaggerSpecLocation, './swaggerStub.json', 'swaggerSpecLocation setter exists');
     t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
     t.end();
 });
@@ -56,15 +56,15 @@ test('SwaggerJSON reference is maintained appropriately', (t) => {
     });
     t.test('====> on changes to `swaggerSpecLocation` property', (st) => {
         let swaggman = new SwaggMan();
-        swaggman.swaggerSpecLocation = './swaggman.stub.json';
-        st.equal(swaggman.swaggerSpecLocation, './swaggman.stub.json', 'using valid JSON location file value');
+        swaggman.swaggerSpecLocation = './swaggmanStub.json';
+        st.equal(swaggman.swaggerSpecLocation, './swaggmanStub.json', 'using valid JSON location file value');
         st.end();
     });
     t.end();
 });
 
 /*
-test('Load Swagger Spec from file', (t) => {
+test('Loads Swagger Spec from file', (t) => {
     let swaggman = new SwaggMan({swaggerSpecLocation: '../ref/RingCentral_Swagger_Basic_20161116.json'});
     t.equal(swaggman.swaggerSpecLocation, '../ref/RingCentral_Swagger_Basic_20161116.json', 'Loads from constructor parameter');
     t.equal(swaggman.swaggerJSON, {}, 'Loaded file stored as property `swaggerJSON`');

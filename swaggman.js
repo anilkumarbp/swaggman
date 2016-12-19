@@ -8,7 +8,7 @@
 **/
 
 // Dependencies
-//const swaggerLoader = require('./lib/swaggerLoader');
+const loader = require('./lib/swaggerLoader');
 
 class SwaggMan {
 
@@ -51,6 +51,7 @@ class SwaggMan {
 
     // SETTERS
     set swaggerSpecLocation(value) {
+        this._swaggerJSON = loader.load(value);
         this._swaggerSpecLocation = value;
     }
 
