@@ -19,8 +19,8 @@ test('Swaggman Class', (t) => {
 });
 
 test('Getters', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: './swaggerStub.json'});
-    t.equal(swaggman.swaggerSpecLocation, './swaggerStub.json' , 'swaggerSpecLocation');
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json' , 'swaggerSpecLocation');
     t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
     t.equal(swaggman.saveToFile, true, 'saveToFile');
@@ -30,8 +30,8 @@ test('Getters', (t) => {
 
 test('Setters', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = './swaggerStub.json';
-    t.equal(swaggman.swaggerSpecLocation, './swaggerStub.json', 'swaggerSpecLocation setter exists');
+    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'swaggerSpecLocation setter exists');
     t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
     t.end();
 });
@@ -49,15 +49,15 @@ test('SwaggerJSON reference is maintained appropriately', (t) => {
     let swaggman = new SwaggMan();
     t.equal(swaggman.swaggerJSON, null, 'Should default to null');
     t.test('====> during instantiation', (st) => {
-        let swaggman = new SwaggMan({swaggerSpecLocation: './swaggmanStub.json'});
-        st.equal(swaggman.swaggerSpecLocation, './swaggmanStub.json', 'When valid JSON value is provided');
+        let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
+        st.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'When valid JSON value is provided');
         //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
         st.end();
     });
     t.test('====> on changes to `swaggerSpecLocation` property', (st) => {
         let swaggman = new SwaggMan();
-        swaggman.swaggerSpecLocation = './swaggmanStub.json';
-        st.equal(swaggman.swaggerSpecLocation, './swaggmanStub.json', 'using valid JSON location file value');
+        swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
+        st.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'using valid JSON location file value');
         st.end();
     });
     t.end();

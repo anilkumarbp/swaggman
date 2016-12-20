@@ -13,7 +13,7 @@ test('SwaggerLoader', (t) => {
     t.throws(() => loader.load(123), /Swagger specification file or URI is required/, 'load() throws when argument is non-string type');
     t.throws(() => loader.load(true), /Swagger specification file or URI is required/, 'load() throws when argument is non-string type');
     t.throws(() => loader.load(''), /Swagger specification file or URI is required/, 'load() throws when argument is empty string');
-    t.doesNotThrow(() => loader.load('./ref/RingCentral_Swagger_Basic_20161116.json'), null, 'load() accepts non-empty string as an argument');
+    t.doesNotThrow(() => loader.load(__dirname + '/swaggerStub.json'), null, 'load() accepts non-empty string as an argument');
     t.end();
 });
 
