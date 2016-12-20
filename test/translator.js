@@ -1,6 +1,7 @@
 'use strict';
 
 // Dependencies
+const postmanSchema = require('./postmanCollectionSchema.json'); // Used for internal invalidation testing
 const test = require('tape');
 const translate = require('../lib/translator');
 const Validator = require('jsonschema').Validator;
