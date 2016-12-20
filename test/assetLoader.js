@@ -3,16 +3,16 @@
 const tape = require('tape');
 const _test = require('tape-promise').default;
 const test = _test(tape); //decorate tape
-const loader = require('../lib/swaggerLoader');
+const loader = require('../lib/assetLoader');
 
-test('SwaggerLoader', (t) => {
+test('AssetLoader', (t) => {
     //t.plan(2);
     t.comment('load()');
     t.equal(typeof loader.load, 'function', 'Exposes load() method');
-    t.throws(() => loader.load(), /Swagger specification file or URI is required/, 'load() throws when argument is undefined');
-    t.throws(() => loader.load(123), /Swagger specification file or URI is required/, 'load() throws when argument is non-string type');
-    t.throws(() => loader.load(true), /Swagger specification file or URI is required/, 'load() throws when argument is non-string type');
-    t.throws(() => loader.load(''), /Swagger specification file or URI is required/, 'load() throws when argument is empty string');
+    t.throws(() => loader.load(), /Asset file or URI is required/, 'load() throws when argument is undefined');
+    t.throws(() => loader.load(123), /Asset file or URI is required/, 'load() throws when argument is non-string type');
+    t.throws(() => loader.load(true), /Asset file or URI is required/, 'load() throws when argument is non-string type');
+    t.throws(() => loader.load(''), /Asset file or URI is required/, 'load() throws when argument is empty string');
     t.doesNotThrow(() => loader.load(__dirname + '/swaggerStub.json'), null, 'load() accepts non-empty string as an argument');
     t.end();
 });
