@@ -19,8 +19,13 @@ test('Translator', (t) => {
 });
 
 test('Translator.info()', (t) => {
+    let testInfo = translate.info(swaggerStub);
     t.doesNotThrow(() => translate.info(swaggerStub), null , 'Accepts valid argument');
     t.throws(() => translate.info(123), /Invalid argument, requires swaggerJSON/, 'Throws when argument is invalid');
+    t.equal(testInfo.hasOwnProperty('_postman_id'), true, 'Output contains `_postman_id` property');
+    t.equal(testInfo.hasOwnProperty('schema'), true, 'Output contains `schema` property');
+    t.equal(testInfo.hasOwnProperty('name'), true, 'Output contains `name` property');
+    t.equal(testInfo.hasOwnProperty('description'), true, 'Output contains `description` property');
     //t.equal(typeof translate.info('swagger'), 'object', 'Returns valid postman info object');
     t.end();
 });
