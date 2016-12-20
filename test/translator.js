@@ -1,28 +1,9 @@
 'use strict';
 
 // Dependencies
-const postmanSchema = require('./postmanCollectionSchema.json'); // Used for internal invalidation testing
+//const postmanSchema = require('./postmanCollectionSchema.json'); // Used for internal invalidation testing
 const test = require('tape');
 const translate = require('../lib/translator');
-const Validator = require('jsonschema').Validator;
-const v = new Validator();
-
-// TODO: !!!! ---> Add references in Validator to Postman Schema
-/*
-v.addSchema(infoSchema, postmanSchema.definitions.info);
-v.addSchema(itemSchema, postmanSchema.definitions.item);
-v.addSchema(folderSchema, postmanSchema.definitions.item-group);
-v.addSchema(requestSchema, postmanSchema.definitions.request);
-v.addSchema(responseSchema, postmanSchema.definitions.response);
-v.addSchema(scriptSchema, postmanSchema.definitions.script);
-v.addSchema(uriSchema, postmanSchema.definitions.uri);
-v.addSchema(variableSchema, postmanSchema.definitions.variable);
-v.addSchema(headerSchema, postmanSchema.definitions.header);
-v.addSchema(eventSchema, postmanSchema.definitions.event);
-v.addSchema(descriptionSchema, postmanSchema.definitions.description);
-v.addSchema(cookieSchema, postmanSchema.definitions.cookie);
-v.addSchema(authSchema, postmanSchema.definitions.auth);
-*/
 
 // Stubs
 const swaggerStub = require('./RCSwagger_20161116.json');
@@ -34,7 +15,6 @@ test('Translator', (t) => {
     t.equal(typeof translate.params, 'function', 'Exposes params() method');
     t.equal(typeof translate.variables, 'function', 'Exposes variables() method');
     t.equal(typeof translate.auth, 'function', 'Exposes auth() method');
-    t.equal(typeof translate.isValid, 'function', 'Exposes isValid() method');
     t.end();
 });
 
@@ -70,7 +50,9 @@ test('Translator.auth()', (t) => {
     t.end();
 });
 
+/*
 test('Translator.isValid(definitionId, testData)', (t) => {
     t.fail('TODO!!! Make sure testData satisfies definition requirements');
     t.end();
 });
+*/
