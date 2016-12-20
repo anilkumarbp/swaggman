@@ -45,30 +45,22 @@ test('Output location is configurable', (t) => {
     t.end();
 });
 
-test('SwaggerJSON reference is maintained appropriately', (t) => {
+test('SwaggerJSON defaults to null', (t) => {
     let swaggman = new SwaggMan();
     t.equal(swaggman.swaggerJSON, null, 'Should default to null');
-    t.test('====> during instantiation', (st) => {
-        let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
-        st.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'When valid JSON value is provided');
-        //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
-        st.end();
-    });
-    t.test('====> on changes to `swaggerSpecLocation` property', (st) => {
-        let swaggman = new SwaggMan();
-        swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
-        st.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'using valid JSON location file value');
-        st.end();
-    });
     t.end();
 });
 
-/*
-test('Loads Swagger Spec from file', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: '../ref/RingCentral_Swagger_Basic_20161116.json'});
-    t.equal(swaggman.swaggerSpecLocation, '../ref/RingCentral_Swagger_Basic_20161116.json', 'Loads from constructor parameter');
-    t.equal(swaggman.swaggerJSON, {}, 'Loaded file stored as property `swaggerJSON`');
+test('SwaggerJSON can be set during instantiation', (t) => {
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'When valid JSON value is provided');
+    //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
     t.end();
 });
-let swaggman = new SwaggMan('https://developers.ringcentral.com/api-explorer/latest/swagger-ring_basic.json');
-*/
+
+test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) => {
+    let swaggman = new SwaggMan();
+    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'using valid JSON location file value');
+    t.end();
+});

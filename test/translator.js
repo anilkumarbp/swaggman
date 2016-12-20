@@ -6,8 +6,7 @@ const translate = require('../lib/translator');
 // Stubs
 const swaggerSpec = require('../ref/RingCentral_Swagger_Basic_20161116.json');
 
-test('Builder', (t) => {
-    t.comment('info()');
+test('Translator', (t) => {
     t.equal(typeof translate.info, 'function', 'Exposes info() method');
     t.equal(typeof translate.items, 'function', 'Exposes items() method');
     t.equal(typeof translate.events, 'function', 'Exposes events() method');
@@ -17,29 +16,29 @@ test('Builder', (t) => {
     t.end();
 });
 
-test('Builder.info()', (t) => {
+test('Translator.info()', (t) => {
     t.doesNotThrow(() => translate.info(swaggerSpec), null , 'Accepts valid argument');
     t.throws(() => translate.info(123), /Invalid argument, requires swaggerJSON/, 'Throws when argument is invalid');
     //t.equal(typeof translate.info('swagger'), 'object', 'Returns valid postman info object');
     t.end();
 });
 
-test('Builder.items()', (t) => {
+test('Translator.items()', (t) => {
     t.end();
 });
 
-test('Builder.events()', (t) => {
+test('Translator.events()', (t) => {
     t.end();
 });
 
-test('Builder.params()', (t) => {
+test('Translator.params()', (t) => {
     t.end();
 });
 
-test('Builder.variables()', (t) => {
+test('Translator.variables()', (t) => {
     t.end();
 });
 
-test('Builder.auth()', (t) => {
+test('Translator.auth()', (t) => {
     t.end();
 });
