@@ -9,6 +9,7 @@
 
 // Dependencies
 if('production' !== process.env.NODE_ENV) require('dotenv').config(); // Only used for local development and usage
+const fs = require('fs');
 const loader = require('./lib/swaggerLoader');
 
 class SwaggMan {
@@ -27,6 +28,10 @@ class SwaggMan {
             throw new Error('Swagger specification file or URI is required');
         }
         return this._postmanJSON;
+    }
+
+    _outputPostman(postmanJSON) {
+        // TODO!! Complete based on configurations
     }
 
     // GETTERS
