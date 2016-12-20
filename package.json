@@ -4,7 +4,8 @@
   "description": "Simple module to convert Swagger2 Spec into Postman2 Collection",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js | tap-spec"
+    "test": "tape test/*.js | tap-spec",
+    "start": "NODE_ENV=production node ./swaggman"
   },
   "author": "Benjamin Dean <benjamin@benjamindean.com> (http://benjamindean.com)",
   "license": "MIT",

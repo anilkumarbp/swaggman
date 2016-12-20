@@ -8,6 +8,7 @@
 **/
 
 // Dependencies
+if('production' !== process.env.NODE_ENV) require('dotenv').config(); // Only used for local development and usage
 const loader = require('./lib/swaggerLoader');
 
 class SwaggMan {
