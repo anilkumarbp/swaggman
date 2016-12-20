@@ -64,3 +64,29 @@ test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) 
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'using valid JSON location file value');
     t.end();
 });
+
+test('Can save converted Postman Collection to local filesystem', (t) => {
+    t.fail();
+    t.end();
+});
+
+test('Saves to local filesystem using default filename', (t) => {
+    t.fail();
+    t.end();
+});
+
+test('Saves to local filesystem using supplied filename parameters', (t) => {
+    t.fail();
+    t.end();
+});
+
+test('Can send converted Postman Collection to stdout for use', (t) => {
+    t.fail();
+    t.end();
+});
+
+/* --> Future feature
+test('Can POST converted Postman Collection defined endpoint', (t) => {
+    t.end();
+});
+*/
