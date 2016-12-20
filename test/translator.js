@@ -1,10 +1,13 @@
 'use strict';
 
+// Dependencies
 const test = require('tape');
 const translate = require('../lib/translator');
+const Validator = require('jsonschema').Validator;
+const v = new Validator();
 
 // Stubs
-const swaggerSpec = require('../ref/RingCentral_Swagger_Basic_20161116.json');
+const swaggerStub = require('./RCSwagger_20161116.json');
 
 test('Translator', (t) => {
     t.equal(typeof translate.info, 'function', 'Exposes info() method');
@@ -13,11 +16,12 @@ test('Translator', (t) => {
     t.equal(typeof translate.params, 'function', 'Exposes params() method');
     t.equal(typeof translate.variables, 'function', 'Exposes variables() method');
     t.equal(typeof translate.auth, 'function', 'Exposes auth() method');
+    t.equal(typeof translate.isValid, 'function', 'Exposes isValid() method');
     t.end();
 });
 
 test('Translator.info()', (t) => {
-    t.doesNotThrow(() => translate.info(swaggerSpec), null , 'Accepts valid argument');
+    t.doesNotThrow(() => translate.info(swaggerStub), null , 'Accepts valid argument');
     t.throws(() => translate.info(123), /Invalid argument, requires swaggerJSON/, 'Throws when argument is invalid');
     //t.equal(typeof translate.info('swagger'), 'object', 'Returns valid postman info object');
     t.end();
@@ -45,5 +49,10 @@ test('Translator.variables()', (t) => {
 
 test('Translator.auth()', (t) => {
     t.fail('TODO??? Handle auth properly...Authorization Flow, Implicit Flow, Refresh Flow, etc...???');
+    t.end();
+});
+
+test('Translator.isValid(definitionId, testData)', (t) => {
+    t.fail('TODO!!! Make sure testData satisfies definition requirements');
     t.end();
 });
