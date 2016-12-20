@@ -66,22 +66,22 @@ test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) 
 });
 
 test('Can save converted Postman Collection to local filesystem', (t) => {
-    t.fail();
+    t.fail('TODO!!! Make sure all the defaults operate as expected');
     t.end();
 });
 
-test('Saves to local filesystem using default filename', (t) => {
-    t.fail();
+test('Can use default filename', (t) => {
+    t.fail('TODO!!! Establish sane default filename');
     t.end();
 });
 
-test('Saves to local filesystem using supplied filename parameters', (t) => {
-    t.fail();
+test('Save to filesystem as configured', (t) => {
+    t.fail('TODO!!! When saveToFile is true (default), save Postman to configured file on disk');
     t.end();
 });
 
-test('Can send converted Postman Collection to stdout for use', (t) => {
-    t.fail();
+test('Output to stdout as configured', (t) => {
+    t.fail('TODO!!! When saveToFile is false, output Postman to stdout');
     t.end();
 });
 

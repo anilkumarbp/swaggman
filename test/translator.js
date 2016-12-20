@@ -24,21 +24,26 @@ test('Translator.info()', (t) => {
 });
 
 test('Translator.items()', (t) => {
+    t.fail('TODO!!! ETL Postman Folders and Items from Swagger');
     t.end();
 });
 
 test('Translator.events()', (t) => {
+    t.fail('TODO!!! Must build `test` and `prerequest` events where appropriate from helpers');
     t.end();
 });
 
 test('Translator.params()', (t) => {
+    t.fail('TODO!!! Must be able to properly translate query, header, and body parameters');
     t.end();
 });
 
 test('Translator.variables()', (t) => {
+    t.fail('TODO??? Set some rational default variables which can be used across multiple environments???');
     t.end();
 });
 
 test('Translator.auth()', (t) => {
+    t.fail('TODO??? Handle auth properly...Authorization Flow, Implicit Flow, Refresh Flow, etc...???');
     t.end();
 });
