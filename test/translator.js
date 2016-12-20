@@ -49,7 +49,9 @@ test('Translator.items()', (t) => {
 });
 
 test('Translator.events()', (t) => {
-    t.fail('TODO!!! Must build `test` and `prerequest` events where appropriate from helpers');
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.comment('TODO: Need to improve this quite a bit');
     t.end();
 });
 
