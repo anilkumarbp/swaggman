@@ -11,6 +11,7 @@ const swaggerStub = require('./RCSwagger_20161116.json');
 test('Translator', (t) => {
     t.equal(typeof translate.info, 'function', 'Exposes info() method');
     t.equal(typeof translate.items, 'function', 'Exposes items() method');
+    t.equal(typeof translate.folders, 'function', 'Exposes folders() method');
     t.equal(typeof translate.events, 'function', 'Exposes events() method');
     t.equal(typeof translate.params, 'function', 'Exposes params() method');
     t.equal(typeof translate.variables, 'function', 'Exposes variables() method');
@@ -18,7 +19,7 @@ test('Translator', (t) => {
     t.end();
 });
 
-test('Translator.info()', (t) => {
+test('Translator.info(swaggerJSON)', (t) => {
     let testInfo = translate.info(swaggerStub);
     t.doesNotThrow(() => translate.info(swaggerStub), null , 'Accepts valid argument');
     t.throws(() => translate.info(123), /Invalid argument, requires swaggerJSON/, 'Throws when argument is invalid');
@@ -30,8 +31,20 @@ test('Translator.info()', (t) => {
     t.end();
 });
 
+test('Translator.folders()', (t) => {
+    let testFolders = translate.folders(swaggerStub);
+    t.ok(Array.isArray(testFolders), 'Folders must be type array');
+    t.ok( 'object' === typeof testFolders[0], 'Folder elements should be objects');
+    t.equal(testFolders[0].hasOwnProperty('items'), true, 'Each folder requires `items` property');
+    t.end();
+});
+
 test('Translator.items()', (t) => {
-    t.fail('TODO!!! ETL Postman Folders and Items from Swagger');
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.ok(Array.isArray(testItems), 'Item must be type array');
+    //t.equal(testItems[0].hasOwnProperty('request'), true, 'Items require `request` property');
+    //t.equal(typeof testItems[0].'item'], 'object', 'Required `request` property must be an object');
     t.end();
 });
 
