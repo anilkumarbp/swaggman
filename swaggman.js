@@ -58,24 +58,26 @@ class SwaggMan {
         });
     }
 
-    finish(data) {
+    finish(options) {
         return new Promise((resolve, reject) => {
-            let filename = this.outputFilename;
-            let isUri = (filename.startsWith('http://', 1) || filename.startsWith('https://')) ? true : false;
+            let postmanJSON = (options && options.postmanJSON) ? options.postmanJSON : this.postmanJSON;
+            postmanJSON = JSON.stringify(postmanJSON);
+            let dest = this.outputFilename;
+            let isUri = (dest.startsWith('http://', 1) || dest.startsWith('https://')) ? true : false;
 
             // Return data to caller for their use
             if(!this._saveToFile && !isUri) {
-                resolve(JSON.stringify(this._postmanJSON));
+                resolve(postmanJSON);
             }
 
             // Handle URL POST
             if(this._saveToFile && isUri) {
-                const lib = (filename.startsWith('https')) ? require('https') : require('http');
-                const parsedUrl = url.parse(filename);
+                const lib = (dest.startsWith('https')) ? require('https') : require('http');
+                const parsedUrl = url.parse(dest);
                 parsedUrl.method = 'POST';
                 parsedUrl.headers = {
                     'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(JSON.stringify(data)),
+                    'Content-Length': Buffer.byteLength(postmanJSON),
                     'X-Swaggman-Signature': this._signature
                 };
 
@@ -99,22 +101,22 @@ class SwaggMan {
                     reject(err);
                 });
 
-                request.write(JSON.stringify(data));
+                request.write(postmanJSON);
                 request.end();
             }
 
             // Handle filename
             if(this.saveToFile && !isUri) {
                 // Prefix with path local to this module if not specified, in the future improve this to use Node.Path module
-                if(!filename.startsWith('./') && !filename.startsWith('../') && !filename.startsWith('/')) {
-                    filename = './' + filename;
+                if(!dest.startsWith('./') && !dest.startsWith('../') && !dest.startsWith('/')) {
+                    dest = './' + dest
                 }
-                fs.writeFile(filename, JSON.stringify(this._postmanJSON), (err) => {
+                fs.writeFile(dest, postmanJSON, (err) => {
                     if(err) {
                         console.error(err);
                         reject(err);
                     } else {
-                        resolve('The file `' + filename + '` has been written to disk!');
+                        resolve('Postman Collection file, `' + dest + '` has been written to disk!');
                     }
                 });
             }

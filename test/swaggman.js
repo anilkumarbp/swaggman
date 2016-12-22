@@ -25,6 +25,15 @@ test('convert()', (t) => {
 test('finish()', (t) => {
     let swaggman = new SwaggMan(__dirname + '/RCSwagger_20161116.json');
     t.equal(typeof swaggman.finish, 'function', 'Exposes finish() method');
+    t.ok(swaggman.finish(), 'Does not require arguments');
+    t.doesNotThrow(() => swaggman.finish({dest: "recite", src: "swaggerJSON"}), 'Accepts simple options');
+    t.end();
+
+    /* TODO:
+       - finish should accept options {dest: enum["file","post","recite"], src: swaggerJSON}
+       - finish should call the appropriate destAction based on options.dest
+       - Only when dest === "recite" should finish receive anything back for use
+       - All conversions should be done before we get here, if the data is not in the anticipated shape, execute the methods accordingly
 
     // Save to file on disk by default
     swaggman.convert()
@@ -32,7 +41,6 @@ test('finish()', (t) => {
         swaggman.finish(pmData);
     }.bind(this))
     .then((resolution) => {
-        console.log('FINAL RESOLUTION: ', resolution);
         t.ok(() => fs.readFileSync(__dirname + '/' + swaggman.outputFilename), 'file has been written');
     })
     .catch(function(e) {
@@ -54,6 +62,7 @@ test('finish()', (t) => {
     // Should POST to provided endpoint
 
     t.end();
+    */
 });
 
 test('Getters', (t) => {
@@ -110,7 +119,7 @@ test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) 
     t.end();
 });
 
-test('Can save converted Postman Collection to local filesystem', (t) => {
+test('Can write output to local filesystem', (t) => {
     let swaggman = new SwaggMan();
     swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
     swaggman.convert();
