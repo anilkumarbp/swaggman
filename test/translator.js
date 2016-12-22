@@ -14,6 +14,8 @@ test('Translator', (t) => {
     t.equal(typeof translate.folders, 'function', 'Exposes folders() method');
     t.equal(typeof translate.events, 'function', 'Exposes events() method');
     t.equal(typeof translate.params, 'function', 'Exposes params() method');
+    t.equal(typeof translate.urls, 'function', 'Exposes urls() method');
+    t.equal(typeof translate.requests, 'function', 'Exposes requests() method');
     t.equal(typeof translate.variables, 'function', 'Exposes variables() method');
     t.equal(typeof translate.auth, 'function', 'Exposes auth() method');
     t.end();
@@ -49,6 +51,15 @@ test('Translator.items()', (t) => {
 });
 
 test('Translator.events()', (t) => {
+    // TODO: Need to drastically improve this, needs to be tested in isolation
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.comment('TODO: Need to improve this quite a bit');
+    t.end();
+});
+
+test('Translator.requests()', (t) => {
+    // TODO: Need to drastically improve this, needs to be tested in isolation
     let testFolders = translate.folders(swaggerStub);
     let testItems = translate.items(swaggerStub, testFolders);
     t.comment('TODO: Need to improve this quite a bit');
@@ -56,7 +67,9 @@ test('Translator.events()', (t) => {
 });
 
 test('Translator.params()', (t) => {
-    t.fail('TODO!!! Must be able to properly translate query, header, and body parameters');
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.comment('TODO: Need to improve this quite a bit');
     t.end();
 });
 
