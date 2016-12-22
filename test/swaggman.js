@@ -26,7 +26,13 @@ test('Getters', (t) => {
     t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
     t.equal(swaggman.saveToFile, true, 'saveToFile');
-    t.equal(swaggman.outputFilename, '', 'outputFilename');
+    if(!process.env.OUTPUT_FILENAME) {
+        t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename');
+    }
+    process.env.OUTPUT_FILENAME = '123.json';
+    let s2 = new SwaggMan();
+    t.equal(s2.outputFilename, '123.json', 'Accepts filename from environment variable');
+    process.env.OUTPUT_FILENAME = '';
     t.end();
 });
 
@@ -35,6 +41,7 @@ test('Setters', (t) => {
     swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'swaggerSpecLocation setter exists');
     t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
+    t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename setter exists');
     t.end();
 });
 
@@ -75,8 +82,10 @@ test('Can save converted Postman Collection to local filesystem', (t) => {
     t.end();
 });
 
-test('Can use default filename', (t) => {
-    t.fail('TODO!!! Establish sane default filename');
+test('Generates output filename', (t) => {
+    let swaggman = new SwaggMan();
+    swaggman.outputFilename = 'SuperPostmanFile.json';
+    t.equal(swaggman.outputFilename, 'SuperPostmanFile.json', 'Uses sane defaults');
     t.end();
 });
 

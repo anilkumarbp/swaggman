@@ -17,7 +17,7 @@ class SwaggMan {
     constructor(options = {}) {
         this._swaggerSpecLocation = options.swaggerSpecLocation || process.env.SWAGGER_SPEC_LOCATION;
         this._saveToFile = options.saveToFile || true;
-        this._outputFilename = options.outputFilename || '';
+        this._outputFilename = process.env.OUTPUT_FILENAME || options.outputFilename || 'RingCentral_API_Postman2Collection.json';
         this._swaggerJSON = null;
         this._postmanJSON = {};
     }
@@ -66,6 +66,15 @@ class SwaggMan {
             throw new Error('saveToFile property expects type boolean');
         }
         this._saveToFile = value;
+    }
+
+    set outputFilename(value) {
+        if('string' !== typeof value) {
+            throw new Error('Invalid type used setting SwaggMan.outputFilename');
+        }
+        if(value && 'string' === typeof value && -1 !== value.indexOf('.json')) {
+            this._outputFilename = value;
+        }
     }
 
 }
