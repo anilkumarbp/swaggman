@@ -12,17 +12,52 @@ test('Swaggman Class', (t) => {
     t.equal(typeof SwaggMan, 'function', 'Can be instantiated');
     t.ok(swaggman, 'Exists after instantiation, and can be instantiated with no arguments');
     t.equal(swaggman instanceof SwaggMan, true, 'Instances have the proper prototype');
-    t.comment('convert()');
+    t.end();
+});
+
+test('convert()', (t) => {
+    let swaggman = new SwaggMan();
     t.equal(typeof swaggman.convert, 'function', 'Exposes convert() method');
-    t.doesNotThrow(() => swaggman.convert('swagger'), null , 'convert() method accepts string as an argument');
     t.throws(() => swaggman.convert(123), /Swagger specification file or URI is required/, 'convert() throws when argument is non-string type');
-    t.equal(typeof swaggman.convert('swagger'), 'object', 'valid call to convert() returns an object');
+    t.end();
+});
+
+test('finish()', (t) => {
+    let swaggman = new SwaggMan(__dirname + '/RCSwagger_20161116.json');
+    t.equal(typeof swaggman.finish, 'function', 'Exposes finish() method');
+
+    // Save to file on disk by default
+    swaggman.convert()
+    .then(function(pmData) {
+        swaggman.finish(pmData);
+    }.bind(this))
+    .then((resolution) => {
+        console.log('FINAL RESOLUTION: ', resolution);
+    })
+    .catch(function(e) {
+        console.error(e);
+        throw e;
+    });
+    t.ok(() => fs.readFileSync(__dirname + '/' + swaggman.outputFilename));
+
+    // Should return value to caller 
+    swaggman.saveToFile = false;
+    swaggman.finish()
+    .then((result) => {
+        t.pass(result);
+    })
+    .catch(function(e) {
+        t.fail(e);
+    });
+    
+    // Should POST to provided endpoint
+
     t.end();
 });
 
 test('Getters', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
-    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json' , 'swaggerSpecLocation');
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json'});
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json' , 'swaggerSpecLocation');
     t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
     t.equal(swaggman.saveToFile, true, 'saveToFile');
@@ -38,8 +73,8 @@ test('Getters', (t) => {
 
 test('Setters', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
-    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'swaggerSpecLocation setter exists');
+    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'swaggerSpecLocation setter exists');
     t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
     t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename setter exists');
     t.end();
@@ -61,24 +96,33 @@ test('SwaggerJSON defaults to null', (t) => {
 });
 
 test('SwaggerJSON can be set during instantiation', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/swaggerStub.json'});
-    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'When valid JSON value is provided');
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json'});
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'When valid JSON value is provided');
     //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
     t.end();
 });
 
 test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
-    t.equal(swaggman.swaggerSpecLocation, __dirname + '/swaggerStub.json', 'using valid JSON location file value');
+    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
+    t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'using valid JSON location file value');
     t.end();
 });
 
 test('Can save converted Postman Collection to local filesystem', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
-    let c = swaggman.convert();
-    t.ok(() => fs.readFileSync(__dirname + '/' + process.env.POSTMAN_OUTPUT_FILENAME + '.json'));
+    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
+    swaggman.convert();
+
+    swaggman.finish()
+    .then((result) => {
+        console.log(result);
+        t.ok(() => fs.readFileSync(__dirname + '/' + process.env.POSTMAN_OUTPUT_FILENAME + '.json'), 'The file was successfully written to disk');
+    })
+    .catch((e) => {
+        console.error(e);
+        t.fail(e);
+    });
     t.end();
 });
 
@@ -86,16 +130,6 @@ test('Generates output filename', (t) => {
     let swaggman = new SwaggMan();
     swaggman.outputFilename = 'SuperPostmanFile.json';
     t.equal(swaggman.outputFilename, 'SuperPostmanFile.json', 'Uses sane defaults');
-    t.end();
-});
-
-test('Save to filesystem as configured', (t) => {
-    t.fail('TODO!!! When saveToFile is true (default), save Postman to configured file on disk');
-    t.end();
-});
-
-test('Output to stdout as configured', (t) => {
-    t.fail('TODO!!! When saveToFile is false, output Postman to stdout');
     t.end();
 });
 

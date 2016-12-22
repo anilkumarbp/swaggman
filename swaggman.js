@@ -10,16 +10,29 @@
 // Dependencies
 if('production' !== process.env.NODE_ENV) require('dotenv').config(); // Only used for local development and usage
 const fs = require('fs');
+const url = require('url');
 const loader = require('./lib/assetLoader');
+const translate = require('./lib/translator');
 
 class SwaggMan {
 
     constructor(options = {}) {
         this._swaggerSpecLocation = options.swaggerSpecLocation || process.env.SWAGGER_SPEC_LOCATION;
-        this._saveToFile = options.saveToFile || true;
+        this._saveToFile = options.saveToFile || true; // Default to true
         this._outputFilename = process.env.OUTPUT_FILENAME || options.outputFilename || 'RingCentral_API_Postman2Collection.json';
         this._swaggerJSON = null;
         this._postmanJSON = {};
+        this._signature = options.signature || process.env.SIGNATURE;
+        if(this._swaggerSpecLocation) {
+            loader.load(this._swaggerSpecLocation)
+            .then(function(result) {
+                this._swaggerJSON = JSON.parse(result);
+            }.bind(this))
+            .catch(function(e) {
+                console.error(e);
+                throw e;
+            });
+        }
     }
 
     convert(swaggerSpec) {
@@ -27,11 +40,90 @@ class SwaggMan {
         if(!swaggerSpec || 'string' !== typeof swaggerSpec) {
             throw new Error('Swagger specification file or URI is required');
         }
-        return this._postmanJSON;
+
+        return loader.load(swaggerSpec)
+        .then(function(result) {
+            result = JSON.parse(result);
+            console.log('SWAGGER PARSED: ', result);
+            this._postmanJSON['info']       = translate.info(result);
+            this._postmanJSON['item']       = translate.items(result);
+            this._postmanJSON['event']      = translate.events(result);
+            this._postmanJSON['variables']  = translate.variables(result);
+            this._postmanJSON['auth']       = translate.auth(result);
+            console.log('CONVERT RESULT: ', this._postmanJSON);
+            return this._postmanJSON;
+        }.bind(this))
+        .catch(function(e) {
+            console.error(e);
+            throw e;
+        });
     }
 
-    _outputPostman(postmanJSON) {
-        // TODO!! Complete based on configurations
+    finish(data) {
+        return new Promise((resolve, reject) => {
+            let filename = this.outputFilename;
+            let isUri = (filename.startsWith('http://', 1) || filename.startsWith('https://')) ? true : false;
+
+            // Return data to caller for their use
+            if(!this._saveToFile && !isUri) {
+                //console.log('JSON.stringify(this._postmanJSON): ', JSON.stringify(this._postmanJSON));
+                resolve(JSON.stringify(this._postmanJSON));
+            }
+
+            // Handle URL POST
+            if(this._saveToFile && isUri) {
+                const lib = (filename.startsWith('https')) ? require('https') : require('http');
+                const parsedUrl = url.parse(filename);
+                parsedUrl.method = 'POST';
+                parsedUrl.headers = {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(JSON.stringify(data)),
+                    'X-Swaggman-Signature': this._signature
+                };
+
+                const request = lib.request(parsedUrl, (res) => {
+                    // Handle HTTP errors
+                    if(res.statusCode < 200 || res.statusCode > 299) {
+                        reject(new Error('Failed to load URL, status code: ${response.statusCode}'));
+                    }
+                    // Placeholder for chunked response
+                    const body = [];
+                    res.on('data', (chunk) => {
+                        body.push(chunk);
+                    });
+                    res.on('end', () => {
+                        //console.log('Swagger Spec file downloaded.');
+                        //console.log('typeof readHttpFile data: ', typeof body.join(''));
+                        resolve(body.join(''));
+                    });
+                });
+
+                request.on('error', (err) => {
+                    console.error(err);
+                    reject(err);
+                });
+
+                request.write(JSON.stringify(data));
+                request.end();
+            }
+
+            // Handle filename
+            if(this.saveToFile && !isUri) {
+                // Prefix with path local to this module if not specified, in the future improve this to use Node.Path module
+                if(!filename.startsWith('./') && !filename.startsWith('../') && !filename.startsWith('/')) {
+                    filename = './' + filename;
+                    console.log('FILENAME: ', filename);
+                }
+                fs.writeFile(filename, JSON.stringify(this._postmanJSON), (err) => {
+                    if(err) {
+                        console.error(err);
+                        reject(err);
+                    } else {
+                        resolve('The file `' + filename + '` has been written to disk!');
+                    }
+                });
+            }
+        });
     }
 
     // GETTERS
@@ -57,8 +149,15 @@ class SwaggMan {
 
     // SETTERS
     set swaggerSpecLocation(value) {
-        this._swaggerJSON = loader.load(value);
         this._swaggerSpecLocation = value;
+        loader.load(value)
+        .then(function(result) {
+            this._swaggerJSON = JSON.parse(result);
+        }.bind(this))
+        .catch(function(e) {
+            console.error(e);
+            throw e;
+        });
     }
 
     set saveToFile(value) {

@@ -3,6 +3,7 @@
 *.log
 node_modules
 rcPostmanCollection*
+RingCentral_*
 postmanCollection*
 prerequestScripts/*.*
 ref
