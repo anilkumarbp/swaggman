@@ -33,17 +33,18 @@ test('finish()', (t) => {
     }.bind(this))
     .then((resolution) => {
         console.log('FINAL RESOLUTION: ', resolution);
+        t.ok(() => fs.readFileSync(__dirname + '/' + swaggman.outputFilename), 'file has been written');
     })
     .catch(function(e) {
         console.error(e);
         throw e;
     });
-    t.ok(() => fs.readFileSync(__dirname + '/' + swaggman.outputFilename));
 
     // Should return value to caller 
     swaggman.saveToFile = false;
     swaggman.finish()
     .then((result) => {
+        console.log('RESULT: ', result);
         t.pass(result);
     })
     .catch(function(e) {

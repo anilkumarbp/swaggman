@@ -44,13 +44,12 @@ class SwaggMan {
         return loader.load(swaggerSpec)
         .then(function(result) {
             result = JSON.parse(result);
-            console.log('SWAGGER PARSED: ', result);
             this._postmanJSON['info']       = translate.info(result);
             this._postmanJSON['item']       = translate.items(result);
             this._postmanJSON['event']      = translate.events(result);
             this._postmanJSON['variables']  = translate.variables(result);
             this._postmanJSON['auth']       = translate.auth(result);
-            console.log('CONVERT RESULT: ', this._postmanJSON);
+            //console.log('CONVERT RESULT: ', this._postmanJSON);
             return this._postmanJSON;
         }.bind(this))
         .catch(function(e) {
@@ -66,7 +65,6 @@ class SwaggMan {
 
             // Return data to caller for their use
             if(!this._saveToFile && !isUri) {
-                //console.log('JSON.stringify(this._postmanJSON): ', JSON.stringify(this._postmanJSON));
                 resolve(JSON.stringify(this._postmanJSON));
             }
 
@@ -92,8 +90,6 @@ class SwaggMan {
                         body.push(chunk);
                     });
                     res.on('end', () => {
-                        //console.log('Swagger Spec file downloaded.');
-                        //console.log('typeof readHttpFile data: ', typeof body.join(''));
                         resolve(body.join(''));
                     });
                 });
@@ -112,7 +108,6 @@ class SwaggMan {
                 // Prefix with path local to this module if not specified, in the future improve this to use Node.Path module
                 if(!filename.startsWith('./') && !filename.startsWith('../') && !filename.startsWith('/')) {
                     filename = './' + filename;
-                    console.log('FILENAME: ', filename);
                 }
                 fs.writeFile(filename, JSON.stringify(this._postmanJSON), (err) => {
                     if(err) {
