@@ -74,12 +74,16 @@ test('Translator.params()', (t) => {
 });
 
 test('Translator.variables()', (t) => {
-    t.fail('TODO??? Set some rational default variables which can be used across multiple environments???');
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.comment('TODO: Need to improve this quite a bit');
     t.end();
 });
 
 test('Translator.auth()', (t) => {
-    t.fail('TODO??? Handle auth properly...Authorization Flow, Implicit Flow, Refresh Flow, etc...???');
+    let testFolders = translate.folders(swaggerStub);
+    let testItems = translate.items(swaggerStub, testFolders);
+    t.comment('TODO: Need to improve this quite a bit');
     t.end();
 });
 

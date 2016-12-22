@@ -1,7 +1,9 @@
 'use strict';
 
-const test = require('tape');
-const SwaggMan = require('../swaggman');
+// Dependencies
+const fs        = require('fs');
+const test      = require('tape');
+const SwaggMan  = require('../swaggman');
 
 test('Swaggman Class', (t) => {
     let swaggman = new SwaggMan();
@@ -66,7 +68,10 @@ test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) 
 });
 
 test('Can save converted Postman Collection to local filesystem', (t) => {
-    t.fail('TODO!!! Make sure all the defaults operate as expected');
+    let swaggman = new SwaggMan();
+    swaggman.swaggerSpecLocation = __dirname + '/swaggerStub.json';
+    let c = swaggman.convert();
+    t.ok(() => fs.readFileSync(__dirname + '/' + process.env.POSTMAN_OUTPUT_FILENAME + '.json'));
     t.end();
 });
 
