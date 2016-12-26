@@ -11,18 +11,31 @@ const info = require('../../lib/translator/info');
 
 // Stubs
 const swaggerStub = require('../RCSwagger_20161116.json');
+const infoStub = {
+    _postman_id: 'string',
+    description: 'string',
+    name: 'string',
+    schema: 'string',
+    version: 'string'
+};
 
-test('Translator.info(swaggerJSON)', (t) => {
-    t.fail('TODO: Complete');
-    /*
-    let testInfo = translate.info(swaggerStub);
-    t.doesNotThrow(() => translate.info(swaggerStub), null , 'Accepts valid argument');
-    t.throws(() => translate.info(123), /Invalid argument, requires swaggerJSON/, 'Throws when argument is invalid');
-    t.equal(testInfo.hasOwnProperty('_postman_id'), true, 'Output contains `_postman_id` property');
-    t.equal(testInfo.hasOwnProperty('schema'), true, 'Output contains `schema` property');
-    t.equal(testInfo.hasOwnProperty('name'), true, 'Output contains `name` property');
-    t.equal(testInfo.hasOwnProperty('description'), true, 'Output contains `description` property');
-    //t.equal(typeof translate.info('swagger'), 'object', 'Returns valid postman info object');
-    */
+
+test('Translator.info', (t) => {
+    // Throws errors on invalid or unknown type argument
+    t.throws(() => info('mySwaggerJSON'), /Invalid argument, requires swaggerJSON object/, 'Throws if `type` argument is not a known Postman Auth type');
+
+    // Should be a function
+    t.equal(typeof info, 'function', 'Should be a function');
+    t.end();
+});
+
+test('Translator.info(swaggerJSON) operates as expected', (t) => {
+    t.doesNotThrow(() => info(swaggerStub), null , 'Accepts valid argument');
+    let infoSchemaTest = info(swaggerStub);
+    t.ok(infoSchemaTest.hasOwnProperty('_postman_id'), 'Contains `_postman_id` property');
+    t.ok(infoSchemaTest.hasOwnProperty('name'), 'Contains `name` property');
+    t.ok(infoSchemaTest.hasOwnProperty('description'), 'Contains `description` property');
+    t.ok(infoSchemaTest.hasOwnProperty('schema'), 'Contains `schema` property');
+    t.ok(infoSchemaTest.hasOwnProperty('version'), 'Contains `version` property');
     t.end();
 });
