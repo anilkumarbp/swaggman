@@ -10,7 +10,7 @@ test('Swaggman Class', (t) => {
     //t.plan(2);
     t.comment('Constructor');
     t.equal(typeof SwaggMan, 'function', 'Can be instantiated');
-    t.ok(swaggman, 'Exists after instantiation, and can be instantiated with no arguments');
+    t.ok(swaggman, 'Can be instantiated with no arguments');
     t.equal(swaggman instanceof SwaggMan, true, 'Instances have the proper prototype');
     t.end();
 });
@@ -70,6 +70,7 @@ test('Getters', (t) => {
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json' , 'swaggerSpecLocation');
     t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
+    t.equal(typeof swaggman.eventHelpersDirectory, 'string', 'eventHelpersDiretory'); 
     t.equal(swaggman.saveToFile, true, 'saveToFile');
     if(!process.env.OUTPUT_FILENAME) {
         t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename');
@@ -84,7 +85,9 @@ test('Getters', (t) => {
 test('Setters', (t) => {
     let swaggman = new SwaggMan();
     swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
+    swaggman.eventHelpersDirectory = 'helpers';
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'swaggerSpecLocation setter exists');
+    t.equal(swaggman.eventHelpersDirectory, 'helpers', 'eventHelpersDirectory setter exists');
     t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
     t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename setter exists');
     t.end();

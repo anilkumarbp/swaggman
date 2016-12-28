@@ -12,6 +12,7 @@ if('production' !== process.env.NODE_ENV) require('dotenv').config(); // Only us
 const fs = require('fs');
 const url = require('url');
 const loader = require('./lib/assetLoader');
+const path = require('path');
 const translate = require('./lib/translator');
 
 class SwaggMan {
@@ -20,8 +21,9 @@ class SwaggMan {
         this._swaggerSpecLocation = options.swaggerSpecLocation || process.env.SWAGGER_SPEC_LOCATION;
         this._saveToFile = options.saveToFile || true; // Default to true
         this._outputFilename = process.env.OUTPUT_FILENAME || options.outputFilename || 'RingCentral_API_Postman2Collection.json';
-        this._swaggerJSON = null;
-        this._postmanJSON = {};
+        this._swaggerJSON = options.swaggerJSON || null;
+        this._postmanJSON = {} ;
+        this._eventHelpersDirectory = process.env.EVENT_HELPERS_DIRECTORY || options.eventHelpersDirectory || 'helpers';
         this._signature = options.signature || process.env.SIGNATURE;
         if(this._swaggerSpecLocation) {
             loader.load(this._swaggerSpecLocation)
@@ -45,11 +47,10 @@ class SwaggMan {
         .then(function(result) {
             result = JSON.parse(result);
             this._postmanJSON['info']       = translate.info(result);
-            this._postmanJSON['item']       = translate.items(result);
-            this._postmanJSON['event']      = translate.events(result);
-            this._postmanJSON['variables']  = translate.variables(result);
-            this._postmanJSON['auth']       = translate.auth(result);
-            //console.log('CONVERT RESULT: ', this._postmanJSON);
+            //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['item']       = translate.items(result);
+            //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['event']      = translate.events(result);
+            //TODO: NEED TO FIX VARIABLES ---> this._postmanJSON['variables']  = translate.variables(result);
+            //TODO: NEED TO FIX AUTH TO WORK WITH SWAGGER SECURITY OR SET SANE DEFAULTS----> this._postmanJSON['auth']       = translate.auth(result);
             return this._postmanJSON;
         }.bind(this))
         .catch(function(e) {
@@ -144,6 +145,10 @@ class SwaggMan {
         return this._outputFilename;
     }
 
+    get eventHelpersDirectory() {
+        return this._eventHelpersDirectory;
+    }
+
     // SETTERS
     set swaggerSpecLocation(value) {
         this._swaggerSpecLocation = value;
@@ -170,6 +175,16 @@ class SwaggMan {
         }
         if(value && 'string' === typeof value && -1 !== value.indexOf('.json')) {
             this._outputFilename = value;
+        }
+    }
+
+    set eventHelpersDirectory(value) {
+        let normalizedPath = path.normalize(value);
+        let helpers = fs.readdirSync(normalizedPath);
+        if(-1 === helpers.indexOf('index.js')) {
+            throw new Error('eventHelpersDirectory path is valid, but does not contain the required `index.js` file');
+        } else {
+            this._eventHelpersDirectory = normalizedPath;
         }
     }
 

@@ -12,13 +12,13 @@ const info = require('../../lib/translator/info');
 // Stubs
 const swaggerStub = require('../RCSwagger_20161116.json');
 const requiredInfoStub = {
-    name: 'requiredInfoStubName',
+    title: 'requiredInfoStubName',
     schema: 'requiredInfoStubSchema'
 };
 const optionalInfoStub = {
     _postman_id: 'optionalInfoStubId',
     description: 'optionalInfoStubDescription',
-    name: 'optionalInfoStubName',
+    title: 'optionalInfoStubName',
     schema: 'optionalInfoStubSchema',
     version: 'optionalInfoStubVersion'
 };
@@ -38,7 +38,7 @@ test('Translator.info', (t) => {
     t.doesNotThrow(() => info({info: requiredInfoStub}), null , 'Accepts valid argument with required properties');
     t.doesNotThrow(() => info({info: optionalInfoStub}), null , 'Accepts valid argument with optional properties');
     t.throws(() => info(invalidInfoStub), /Missing property `info` on object supplied as argument to translator.info()/, 'Cannot operate without the `info` property set on the object supplied as argument');
-    t.throws(() => info({info: invalidInfoStub}), /Missing property `name` on info object supplied as argument to translator.info()/, 'Requires argument object.info to have property `name` at a minimum to operate');
+    t.throws(() => info({info: invalidInfoStub}), /Missing property `title` on info object supplied as argument to translator.info()/, 'Requires argument object.info to have property `title` at a minimum to operate');
     t.throws(() => info('mySwaggerJSON'), /Invalid argument type, requires object/, 'Requires the `swaggerJSON` parameter to be of type `object` to operate');
 
     // Required Parameter Output Tests
