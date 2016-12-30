@@ -13,7 +13,7 @@ const requests = require('../../lib/translator/requests');
 const swaggerStub = require('../RCSwagger_20161116.json');
 
 test('Translator.requests()', (t) => {
-    t.fail('Complete');
+    t.fail('TODO: Complete');
     /*
     // TODO: Need to drastically improve this, needs to be tested in isolation
     let testFolders = translate.folders(swaggerStub);

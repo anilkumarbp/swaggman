@@ -2,12 +2,13 @@
 
 // Dependencies
 const fs        = require('fs');
-const test      = require('tape');
+const tape      = require('tape');
+const _test     = require('tape-promise').default;
+const test      = _test(tape); // decorate tape
 const SwaggMan  = require('../swaggman');
 
 test('Swaggman Class', (t) => {
     let swaggman = new SwaggMan();
-    //t.plan(2);
     t.comment('Constructor');
     t.equal(typeof SwaggMan, 'function', 'Can be instantiated');
     t.ok(swaggman, 'Can be instantiated with no arguments');
@@ -16,89 +17,80 @@ test('Swaggman Class', (t) => {
 });
 
 test('convert()', (t) => {
-    let swaggman = new SwaggMan();
+    let swaggman = new SwaggMan({outputFilename: 'convertTestFilename.json'});
     t.equal(typeof swaggman.convert, 'function', 'Exposes convert() method');
     t.throws(() => swaggman.convert(123), /Swagger specification file or URI is required/, 'convert() throws when argument is non-string type');
     t.end();
 });
 
 test('finish()', (t) => {
-    let swaggman = new SwaggMan(__dirname + '/RCSwagger_20161116.json');
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json', outputFilename: 'convertTestFilename.json'});
     t.equal(typeof swaggman.finish, 'function', 'Exposes finish() method');
-    t.ok(swaggman.finish(), 'Does not require arguments');
-    t.doesNotThrow(() => swaggman.finish({dest: "recite", src: "swaggerJSON"}), 'Accepts simple options');
+    t.doesNotThrow(() => {swaggman.finish()}, null, 'When called without parameters, accepts instance members or defaults');
+    t.doesNotThrow(() => {swaggman.finish({saveToFile: false})}, null, 'Accepts boolean for saveToFile');
+    t.doesNotThrow(() => {swaggman.finish({saveToUri: false, saveToFile: false, saveToStdout: false})}, null, 'Can set all three parameters simultaneously');
     t.end();
+});
 
-    /* TODO:
-       - finish should accept options {dest: enum["file","post","recite"], src: swaggerJSON}
-       - finish should call the appropriate destAction based on options.dest
-       - Only when dest === "recite" should finish receive anything back for use
-       - All conversions should be done before we get here, if the data is not in the anticipated shape, execute the methods accordingly
-
-    // Save to file on disk by default
-    swaggman.convert()
-    .then(function(pmData) {
-        swaggman.finish(pmData);
-    }.bind(this))
-    .then((resolution) => {
-        t.ok(() => fs.readFileSync(__dirname + '/' + swaggman.outputFilename), 'file has been written');
-    })
-    .catch(function(e) {
-        console.error(e);
-        throw e;
-    });
-
-    // Should return value to caller 
-    swaggman.saveToFile = false;
-    swaggman.finish()
-    .then((result) => {
-        console.log('RESULT: ', result);
-        t.pass(result);
-    })
-    .catch(function(e) {
-        t.fail(e);
-    });
-    
-    // Should POST to provided endpoint
-
+test('Can write postman output to local filesystem', (t) => {
+    let swaggman = new SwaggMan({outputFilename: 'writeToFileTest.json'});
+    t.ok(swaggman.writePostmanStdout, 'Expose method for writing converted Postman Collection to stdout');
+    swaggman.saveToFile = true;
+    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
+    swaggman.convert();
+    t.ok(() => {fs.readFileSync(swaggman.outputFilename)}, 'File is written successfully');
+    t.doesNotThrow(() => {swaggman.writePostmanStdout()}, null, 'Operates with defaults');
+    t.doesNotThrow(() => {swaggman.writePostmanStdout({})}, null, 'Accepts object as only parameter');
     t.end();
-    */
+});
+
+test('writePostmanFile()', (t) => {
+    let swaggman = new SwaggMan();
+    t.ok(swaggman.writePostmanFile, 'Should support saving converted Postman Collection to file on disk');
+    t.equal(typeof swaggman.writePostmanFile, 'function', 'writePostmanFile is a function');
+    t.end();
+});
+
+test('writePostmanUri()', (t) => {
+    let swaggman = new SwaggMan();
+    t.ok(swaggman.writePostmanUri, 'Should support sending converted Postman Collection using HTTP');
+    t.equal(typeof swaggman.writePostmanUri, 'function', 'writePostmanUri is a function');
+    t.end();
 });
 
 test('Getters', (t) => {
-    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json'});
+    let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json', outputFilename: 'testOutputFilename.json', outputUri: 'testOutputUri.json'});
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json' , 'swaggerSpecLocation');
     t.equal(typeof swaggman.swaggerJSON, 'object', 'swaggerJSON');
     t.equal(typeof swaggman.postmanJSON, 'object', 'postmanJSON');
     t.equal(typeof swaggman.eventHelpersDirectory, 'string', 'eventHelpersDiretory'); 
-    t.equal(swaggman.saveToFile, true, 'saveToFile');
-    if(!process.env.OUTPUT_FILENAME) {
-        t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename');
-    }
+    t.equal(swaggman.saveToFile, false, 'saveToFile');
+    t.equal(swaggman.outputFilename, 'testOutputFilename.json', 'outputFilename');
+    t.equal(swaggman.outputUri, 'testOutputUri.json', 'outputUri');
+
     process.env.OUTPUT_FILENAME = '123.json';
     let s2 = new SwaggMan();
     t.equal(s2.outputFilename, '123.json', 'Accepts filename from environment variable');
-    process.env.OUTPUT_FILENAME = '';
     t.end();
 });
 
 test('Setters', (t) => {
     let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
     swaggman.eventHelpersDirectory = 'helpers';
-    t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'swaggerSpecLocation setter exists');
-    t.equal(swaggman.eventHelpersDirectory, 'helpers', 'eventHelpersDirectory setter exists');
-    t.equal(swaggman.saveToFile, true, 'saveToFile setter exists');
-    t.equal(swaggman.outputFilename, 'RingCentral_API_Postman2Collection.json', 'outputFilename setter exists');
-    t.end();
-});
-
-test('Output location is configurable', (t) => {
-    let swaggman = new SwaggMan();
-    t.equal(swaggman.saveToFile, true, 'saveToFile defaults true, write to disk');
-    swaggman.saveToFile = false;
-    t.equal(swaggman.saveToFile, false, 'saveToFile can set to false, should write to stdout');
-    t.throws(() => swaggman.saveToFile = 1234, /saveToFile property expects type boolean/, 'saveToFile throws on invalid parameter types');
+    t.ok(swaggman.outputFilename = 'setterTestFilename.json', 'outputFilename can be set');
+    t.equal(swaggman.outputFilename, 'setterTestFilename.json', 'outputFilename setter operates properly');
+    t.ok(swaggman.outputUri = 'setterTestUri.json', 'outputUri can be set');
+    t.equal(swaggman.outputUri, 'setterTestUri.json', 'outputUri setter operates properly');
+    t.ok(swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json', 'swaggerSpecLocation can be set');
+    t.equal(swaggman.swaggerSpecLocation, '/Users/benjamin.dean/MyApps/swaggman/test/RCSwagger_20161116.json', 'swaggerSpecLocation setter operates properly');
+    t.ok(swaggman.eventHelpersDirectory = 'helpers', 'eventHelpersDirectory can be set');
+    t.equal(swaggman.eventHelpersDirectory, 'helpers', 'eventHelpersDirectory setter operates properly');
+    t.ok(swaggman.saveToFile = true, 'saveToFile can be set');
+    t.equal(swaggman.saveToFile, true, 'saveToFile setter operates properly');
+    t.ok(swaggman.saveToUri = true, 'saveToUri can be set');
+    t.equal(swaggman.saveToUri, true, 'saveToUri setter operates properly');
+    t.ok(swaggman.saveToStdout = true, 'saveToStdout can be set');
+    t.equal(swaggman.saveToStdout, true, 'saveToStdout setter operates properly');
     t.end();
 });
 
@@ -111,43 +103,19 @@ test('SwaggerJSON defaults to null', (t) => {
 test('SwaggerJSON can be set during instantiation', (t) => {
     let swaggman = new SwaggMan({swaggerSpecLocation: __dirname + '/RCSwagger_20161116.json'});
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'When valid JSON value is provided');
-    //st.equal(swaggman.swaggerJSON, {}, 'should be an object');
     t.end();
 });
 
-test('SwaggerJSON reference is updated using `swaggerSpecLocation` setter', (t) => {
+test('Swaggman.swaggerJSON property is updated when `swaggerSpecLocation` is set', (t) => {
     let swaggman = new SwaggMan();
     swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
     t.equal(swaggman.swaggerSpecLocation, __dirname + '/RCSwagger_20161116.json', 'using valid JSON location file value');
     t.end();
 });
 
-test('Can write output to local filesystem', (t) => {
-    let swaggman = new SwaggMan();
-    swaggman.swaggerSpecLocation = __dirname + '/RCSwagger_20161116.json';
-    swaggman.convert();
-
-    swaggman.finish()
-    .then((result) => {
-        console.log(result);
-        t.ok(() => fs.readFileSync(__dirname + '/' + process.env.POSTMAN_OUTPUT_FILENAME + '.json'), 'The file was successfully written to disk');
-    })
-    .catch((e) => {
-        console.error(e);
-        t.fail(e);
-    });
-    t.end();
-});
-
-test('Generates output filename', (t) => {
+test('Can generate output filename', (t) => {
     let swaggman = new SwaggMan();
     swaggman.outputFilename = 'SuperPostmanFile.json';
     t.equal(swaggman.outputFilename, 'SuperPostmanFile.json', 'Uses sane defaults');
     t.end();
 });
-
-/* --> Future feature
-test('Can POST converted Postman Collection defined endpoint', (t) => {
-    t.end();
-});
-*/

@@ -6,5 +6,6 @@ rcPostmanCollection*
 RingCentral_*
 postmanCollection*
 prerequestScripts/*.*
+writeToFileTest.json
 ref
 .env
