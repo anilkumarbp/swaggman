@@ -48,6 +48,7 @@ class SwaggMan {
 
         return loader.load(swaggerSpec)
         .then((result) => {
+            // TODO!!!!!!!!!!!!!! MUST REFACTOR TO WORK WITH NEW ES6 STRUCTURE !!!!!!!!!!!!!!!!!!!!!!!!
             result = JSON.parse(result);
             this._postmanJSON['info']       = translate.info(result.info);
             //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['item']       = translate.items(result);
