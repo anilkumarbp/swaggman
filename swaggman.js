@@ -49,7 +49,7 @@ class SwaggMan {
         return loader.load(swaggerSpec)
         .then((result) => {
             result = JSON.parse(result);
-            this._postmanJSON['info']       = translate.info(result);
+            this._postmanJSON['info']       = translate.info(result.info);
             //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['item']       = translate.items(result);
             //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['event']      = translate.events(result);
             //TODO: NEED TO FIX VARIABLES ---> this._postmanJSON['variables']  = translate.variables(result);

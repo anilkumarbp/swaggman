@@ -16,11 +16,14 @@ const requiredInfoStub = {
     schema: 'requiredInfoStubSchema'
 };
 const optionalInfoStub = {
-    _postman_id: 'optionalInfoStubId',
     description: 'optionalInfoStubDescription',
     title: 'optionalInfoStubName',
     schema: 'optionalInfoStubSchema',
-    version: 'optionalInfoStubVersion'
+    version: 'optionalInfoStubVersion',
+    contact: 'myContact',
+    license: 'myLicense',
+    termsOfService: 'myTOS',
+    postmanId: 'optionalInfoStubId'
 };
 const invalidInfoStub = {
     description: 'invalidInfoStubDescription',
@@ -34,29 +37,29 @@ test('Translator.info', (t) => {
     t.equal(typeof info, 'function', 'Should be a function');
 
     // Input Tests
-    t.comment('Input tests');
-    t.doesNotThrow(() => info({info: requiredInfoStub}), null , 'Accepts valid argument with required properties');
-    t.doesNotThrow(() => info({info: optionalInfoStub}), null , 'Accepts valid argument with optional properties');
-    t.throws(() => info(invalidInfoStub), /Missing property `info` on object supplied as argument to translator.info()/, 'Cannot operate without the `info` property set on the object supplied as argument');
-    t.throws(() => info({info: invalidInfoStub}), /Missing property `title` on info object supplied as argument to translator.info()/, 'Requires argument object.info to have property `title` at a minimum to operate');
-    t.throws(() => info('mySwaggerJSON'), /Invalid argument type, requires object/, 'Requires the `swaggerJSON` parameter to be of type `object` to operate');
+    t.comment('Testing info() inputs');
+    t.doesNotThrow(() => info(requiredInfoStub), null , 'Accepts valid argument with required properties');
+    t.doesNotThrow(() => info(optionalInfoStub), null , 'Accepts valid argument with optional properties');
+    t.throws(() => info(), /Missing required config property: title/, 'Throws without config parameter');
+    t.throws(() => info(invalidInfoStub), /Missing required config property: title/, 'Throws if missing required config parameter');
+    t.throws(() => info('mySwaggerJSON'), /Missing required config property: title/, 'Throws if config parameter is not type `object`');
 
     // Required Parameter Output Tests
-    t.comment('Required Parameter Output Tests');
-    let reqInfo = info({info: requiredInfoStub});
+    t.comment('Testing info() output with only required config parameter properties');
+    let reqInfo = info(requiredInfoStub);
     t.equal(typeof reqInfo, 'object', 'Returns an object');
     t.ok(reqInfo.hasOwnProperty('_postman_id'), 'Contains `_postman_id` property by default');
     t.ok(reqInfo.hasOwnProperty('name'), 'Contains `name` property as required');
     t.ok(reqInfo.hasOwnProperty('schema'), 'Contains `schema` property as required');
 
     // Optional Parameter Output Tests
-    t.comment('Optional Parameter Output Tests');
-    let optInfo = info({info: optionalInfoStub});
+    t.comment('Testing info() output with all supplied config properties');
+    let optInfo = info(optionalInfoStub);
     t.equal(typeof optInfo, 'object', 'Returns an object');
     t.ok(optInfo.hasOwnProperty('name'), 'Contains `name` property as required');
     t.ok(optInfo.hasOwnProperty('schema'), 'Contains `schema` property as required');
     t.ok(optInfo.hasOwnProperty('_postman_id'), 'Contains `_postman_id` property when provided');
-    t.equal(optInfo.description, optionalInfoStub.description, 'Contains `description` property when provided');
+    t.equal(optInfo.description, optionalInfoStub.description + '\n\n' + optionalInfoStub.license + '\n\n' + optionalInfoStub.contact + '\n\n' + optionalInfoStub.termsOfService, 'Contains `description` property when provided');
     t.ok(optInfo.hasOwnProperty('version'), 'Contains `version` property when provided');
     t.end();
 });
