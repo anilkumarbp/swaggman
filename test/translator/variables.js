@@ -13,11 +13,7 @@ const variables = require('../../lib/translator/variables');
 const swaggerStub = require('../RCSwagger_20161116.json');
 
 test('Translator.variables()', (t) => {
-    t.fail('TODO: Complete');
-    /*
-    let testFolders = translate.folders(swaggerStub);
-    let testItems = translate.items(swaggerStub, testFolders);
-    t.comment('TODO: Need to improve this quite a bit');
-    */
+    t.equal(typeof variables, 'function', 'Should be a function');
+    t.doesNotThrow(() => {variables()}, null, 'Returns an empty array if not passed any variables');
     t.end();
 });
