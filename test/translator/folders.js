@@ -20,6 +20,7 @@ const folderStub = {
 };
 
 test('Translator.folders()', (t) => {
+    /*
     t.equal(typeof folders, 'function', 'translator.folders is a function');
     t.throws(() => { folders() }, /Missing argument, requires two parameters/, 'translator.folders() requires `folderName` and `items` parameters');
     t.throws(() => { folders(123, [{}]) }, /Invalid argument type, `folderName` argument must be of type `string`/, 'translator.folders() requires `folderName` parameter to be a `string`');
@@ -37,7 +38,6 @@ test('Translator.folders()', (t) => {
             dummyFolders.push(fStub);
         });
     }
-    /*
     let testFolders = folders(swaggerStub);
     t.ok(Array.isArray(testFolders), 'Folders must be type array');
     t.ok( 'object' === typeof testFolders[0], 'Folder elements should be objects');
