@@ -20,6 +20,7 @@ test('convert()', (t) => {
     let swaggman = new SwaggMan({outputFilename: 'convertTestFilename.json'});
     t.equal(typeof swaggman.convert, 'function', 'Exposes convert() method');
     t.throws(() => swaggman.convert(123), /Swagger specification file or URI is required/, 'convert() throws when argument is non-string type');
+    t.doesNotThrow(() => {swaggman.convert()}, null, 'Accepts valid input');
     t.end();
 });
 

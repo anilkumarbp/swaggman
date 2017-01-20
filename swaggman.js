@@ -46,56 +46,25 @@ class SwaggMan {
             throw new Error('Swagger specification file or URI is required');
         }
 
-        return loader.load(swaggerSpec)
+        loader.load(swaggerSpec)
         .then((result) => {
-            let validPathProperties = ['$ref', 'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'parameters'];
-            console.log('Result: ', result); // TODO!!! This is returning a buffer instead of the JSON we expect (must be doing something incorrectly with the async of the Promise)
-            console.log('Result.tags: ', result.tags);
-            if(result.tags && Array.isArray(result.tags)) {
-                console.log('HERE');
-                let tagSet = new Set(result.tags); 
-                console.log('myTagSet: ', tagSet);
-                if(process.env.TAGS_ARE_FOLDERS) {
-                    let folders = translate.folders(tagSet);
-                }
+            if(result) {
+                result = JSON.parse(result);
+                this._postmanJSON['info']       = translate.info(result.info);
+                this._postmanJSON['item']       = translate.items(result, true);
+                //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['event']      = translate.events(result);
+                //TODO: NEED TO FIX VARIABLES ---> this._postmanJSON['variables']  = translate.variables(result);
+                //TODO: NEED TO FIX AUTH TO WORK WITH SWAGGER SECURITY OR SET SANE DEFAULTS----> this._postmanJSON['auth']       = translate.auth(result);
+                return {postmanCollection: this._postmanJSON};
+            } else {
+                console.error('NO RESULT FROM CONVERSION!!!');
             }
-            result = JSON.parse(result);
-            let pathsMap = this.mapFromObject(result.paths);
-            //console.log('routeMap: ', routeMap);
-            // Get inside each route
-            for(const path of pathsMap) {
-                //console.log('route: ', route);
-                let methodMap = this.mapFromObject(path[1]);
-                // Get inside each method's properties
-                for(const methodProps of methodMap) {
-                    // TODO: This is what we need to create our items or folders from respectively
-                    console.log(path + ': ' + methodProps);
-                }
-                //console.log('Route: ' + route + ': ', methodMap);
-            }
-            this._postmanJSON['info']       = translate.info(result.info);
-            //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['item']       = translate.items(result);
-            //TODO: NEED TO FIX EVENTS ---> this._postmanJSON['event']      = translate.events(result);
-            //TODO: NEED TO FIX VARIABLES ---> this._postmanJSON['variables']  = translate.variables(result);
-            //TODO: NEED TO FIX AUTH TO WORK WITH SWAGGER SECURITY OR SET SANE DEFAULTS----> this._postmanJSON['auth']       = translate.auth(result);
-            return {postmanCollection: this._postmanJSON};
         })
         .catch(function(e) {
             console.error(e);
             throw e;
         });
     }
-
-    mapFromObject(inputObj) {
-        // Create map from object
-        function* entries(obj) {
-            for( let key in obj) 
-                yield [key, obj[key]];
-        };
-        return new Map(entries(inputObj));
-    }
-
-
 
     writePostmanStdout(postmanData = this._postmanJSON) {
         if(!postmanData) throw new Error('HOLY WHIPPED CREAM BATMAN! The postmanData must be supplied or converted before SwaggMan can do anything with it!');
