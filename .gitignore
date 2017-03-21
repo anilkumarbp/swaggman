@@ -3,7 +3,9 @@
 *.log
 node_modules
 rcPostmanCollection*
+RingCentral_*
 postmanCollection*
 prerequestScripts/*.*
+writeToFileTest.json
 ref
 .env

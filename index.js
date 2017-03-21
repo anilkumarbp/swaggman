@@ -315,7 +315,7 @@ const writePostmanCollection = function() {
 };
 
 const convert = (swaggerSpec) => {
-    swaggerSpec = swaggerSpec || process.env.SWAGGER_SPEC;
+    swaggerSpec = swaggerSpec || process.env.SWAGGER_SPEC_LOCATION;
     if(!swaggerSpec || '' === swaggerSpec) {
         throw new Error('Missing the swagger specification file reference');
     }

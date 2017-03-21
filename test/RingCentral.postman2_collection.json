@@ -1,0 +1,2909 @@
+{
+	"variables": [],
+	"info": {
+		"name": "RingCentral API - 2016-11-16",
+		"_postman_id": "5b89a5e9-a01e-3e49-4912-953c0a04de5c",
+		"description": "This is a collection of API requests associated with the Basic usage plan in RingCentral Connect Platform.\n\nPlease create a new Environment in Postman:\n\n1. appKey: App key for your application\n2. appSecret: App Secret for your application\n3. rcUsername: RingCentral username (must be same environment as the API keys used above)\n4. rcPassword: RingCentral password (must be same environment as the API keys used above)\n5. rcExtension: RingCentral extension\n6. rcApiBaseUri: https://platform[.devtest].ringcentral.com/restapi\n\nThis Postman Collection is configured for use with applications which have been configured to have Application Types which support \"Password Flow\" OAuth2 authentication workflows.\n\nYou must call the Auth endpoint first (this will then cache the access_token for use with all other API resources made available in this Postman collection).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Account",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Account Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var accountId = (postman.getEnvironmentVariable('accountId')) ? postman.getEnvironmentVariable('accountId') : '~';",
+									"postman.clearEnvironmentVariable(\"accountId\");",
+									"postman.setEnvironmentVariable(\"accountId\", accountId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Account Info"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Business Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/business-address",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Account Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Phone Number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"phoneNumberId\");",
+									"",
+									"if ( 0 < records.length ) {",
+									"    if(record.hasOwnProperty('id')) {",
+									"        postman.setEnvironmentVariable(\"phoneNumberId\", record.id);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/phone-number",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Account Phone Number"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Phone Numbers by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Phone Number ID matches supplied value\"] = jsonData.id == postman.getEnvironmentVariable('phoneNumberId');",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var accountId = (postman.getEnvironmentVariable('accountId')) ? postman.getEnvironmentVariable('accountId') : '~';",
+									"postman.clearEnvironmentVariable(\"accountId\");",
+									"postman.setEnvironmentVariable(\"accountId\", accountId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/phone-number/{{phoneNumberId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Account Phone Numbers by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Presence",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"recordingId\");",
+									"var recordingId = \"\";",
+									"",
+									"records.forEach(function(record, idx, records) {",
+									"    if(record.hasOwnProperty('recording')) {",
+									"        recordingId = record.recording.id;",
+									"    }",
+									"});",
+									"",
+									"postman.setEnvironmentVariable(\"recordingId\", recordingId);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var accountId = (postman.getEnvironmentVariable('accountId')) ? postman.getEnvironmentVariable('accountId') : '~';",
+									"postman.clearEnvironmentVariable(\"accountId\");",
+									"postman.setEnvironmentVariable(\"accountId\", accountId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/presence",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Account Presence for all Extensions"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"description": "YOU MUST UPDATE VALUES IN THE \"Pre-request Script\" section of ALL items in this folder to match your RingCentral Sandbox Account.",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Contains an access_token\"] = jsonData.hasOwnProperty('access_token');",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"postman.setEnvironmentVariable(\"myAccessToken\", jsonData.access_token);",
+									"postman.setEnvironmentVariable(\"accountId\", jsonData.owner_id);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var appKey = postman.getEnvironmentVariable(\"appKey\");",
+									"var appSecret = postman.getEnvironmentVariable(\"appSecret\");",
+									"",
+									"postman.setEnvironmentVariable(\"basicAuthHeaderValue\", encodeBasicAuthHeader());",
+									"",
+									"function encodeBasicAuthHeader() {",
+									"    var apiKey = appKey + ':' + appSecret;",
+									"    if(btoa) {",
+									"        return btoa(apiKey);",
+									"    } else {",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/oauth/token",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic {{basicAuthHeaderValue}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded;charset=UTF-8",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "username",
+									"value": "{{rcUsername}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "{{rcPassword}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "extension",
+									"value": "{{rcExtension}}",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": "Obtain a RingCentral access_token using Password Flow.\n\nThis should only be used when RingCentral API Keys are associated with an app which supports \"Password Flow\" OAuth2 as indicated in the RingCentral Developer Portal on the \"Settings\" page for the app respectively.\n\nDefault TTL for access_token is 60 minutes."
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var appKey = postman.getEnvironmentVariable(\"appKey\");",
+									"var appSecret = postman.getEnvironmentVariable(\"appSecret\");",
+									"",
+									"postman.setEnvironmentVariable(\"basicAuthHeaderValue\", encodeBasicAuthHeader());",
+									"",
+									"function encodeBasicAuthHeader() {",
+									"    var apiKey = appKey + ':' + appSecret;",
+									"    if(btoa) {",
+									"        return btoa(apiKey);",
+									"    } else {",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/oauth/revoke",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic {{myApiKey}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "token",
+									"value": "{{myAccessToken}}",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": "Since 1.0.5 (Release 5.14)Revokes access/refresh token. Requests to this endpoint <b>must</b> be authenticated with HTTP Basic scheme using the application key and application secret as login and password, correspondingly. "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Call Log",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Account-level Active-Calls",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/active-calls",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Active Calls at the Account Level\n*REQUIRES ADMIN-AUTH*"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension-level Active-Calls",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/active-calls",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Active Calls for an Extension"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Account-level Call Log",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"recordingId\");",
+									"var recordingId = \"\";",
+									"",
+									"records.forEach(function(record, idx, records) {",
+									"    if(record.hasOwnProperty('recording')) {",
+									"        recordingId = record.recording.id;",
+									"    }",
+									"});",
+									"",
+									"postman.setEnvironmentVariable(\"recordingId\", recordingId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/call-log",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Call-Log for Account\n*REQUIRES ADMIN-AUTH*"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Extension-level Call Log",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"recordingId\");",
+									"var recordingId = \"\";",
+									"",
+									"records.forEach(function(record, idx, records) {",
+									"    if(record.hasOwnProperty('recording')) {",
+									"        recordingId = record.recording.id;",
+									"    }",
+									"});",
+									"",
+									"postman.setEnvironmentVariable(\"recordingId\", recordingId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/call-log",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Call-Log for Extension"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Log Records by Filter",
+					"request": {
+						"url": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/133128004/extension/133128004/call-log?direction=Inbound&type=Voice&view=Detailed&dateFrom=2016-09-01",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.3 (Release 5.11)</p><p>Returns filtered call log records.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadCallLog</td><td>Viewing user call logs</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Calls",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/active-calls?direction={{direction}}&type={{type}}&page={{page}}&perPage={{perPage}}",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"active-calls"
+							],
+							"query": [
+								{
+									"key": "direction",
+									"value": "{{direction}}"
+								},
+								{
+									"key": "type",
+									"value": "{{type}}"
+								},
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "perPage",
+									"value": "{{perPage}}"
+								}
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.13 (Release 6.5)</p><p>Returns records of all extension calls that are in progress, ordered by start time in descending order.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadCallLog</td><td>Viewing user call logs</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Extension-level Call Log ITEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"recordingId\");",
+									"var recordingId = \"\";",
+									"",
+									"records.forEach(function(record, idx, records) {",
+									"    if(record.hasOwnProperty('recording')) {",
+									"        recordingId = record.recording.id;",
+									"    }",
+									"});",
+									"",
+									"postman.setEnvironmentVariable(\"recordingId\", recordingId);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"callRecordId\", \"YOUR_CALL_RECORD_ID\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/call-log/{{callRecordId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Call-Log SINGLE RECORD for Extension"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension Call Log Record(s) by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/call-log/:callRecordId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"call-log",
+								":callRecordId"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								},
+								{
+									"value": "{{callRecordId}}",
+									"id": "callRecordId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.3 (Release 5.11)</p><p>Returns call log record(s) by their ID(s). Batch request is supported.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadCallLog</td><td>Viewing user call logs</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Recording Data",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/recording/:recordingId/content",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"recording",
+								":recordingId",
+								"content"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{recordingId}}",
+									"id": "recordingId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'></p><p></p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadCallRecording</td><td>Downloading call recording content</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Recording",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/recording/:recordingId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"recording",
+								":recordingId"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{recordingId}}",
+									"id": "recordingId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.18</p><p>Returns call recording metadata.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadCallRecording</td><td>Downloading call recording content</td></tr><tr><td class='code'>ReadCallLog</td><td>Viewing user call logs</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Call Recording Metadata",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/recording/{{recordingId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Call Recording Metadata, expects a Call Recording ID value in the path of the request"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Call Recording Content",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/recording/{{recordingId}}/content",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Call Recording Content, expects a Call Recording ID value in the path of the request"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Client Application",
+			"description": "",
+			"item": [
+				{
+					"name": "Create SIP Registration",
+					"request": {
+						"url": "https://platform.devtest.ringcentral.com/restapi/v1.0/client-info/sip-provision",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "JSON body"
+						},
+						"description": "<p style='font-style:italic;'>Since 1.0.16 (Release 7.1)</p><p>Creates SIP registration of a device/application:</p><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dictionary",
+			"description": "",
+			"item": [
+				{
+					"name": "User Role by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/user-role/{{roleId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get User Role by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "User Roles List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/user-role",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get list of User Roles"
+					},
+					"response": []
+				},
+				{
+					"name": "User Permissions List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/permission",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get list of User Permissions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/location?orderBy={{orderBy}}&page={{page}}&perPage={{perPage}}&stateId={{stateId}}&withNxx={{withNxx}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns all the available locations for the certain state.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/language",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.14 (Release 6.6)</p><p>Returns the information about supported languages.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get State by ID",
+					"request": {
+						"url": {
+							"raw": "{{rcApiBaseUri}}/v1.0/dictionary/state/:stateId",
+							"auth": {},
+							"host": [
+								"{{rcApiBaseUri}}"
+							],
+							"path": [
+								"v1.0",
+								"dictionary",
+								"state",
+								":stateId"
+							],
+							"variable": [
+								{
+									"value": "{{stateId}}",
+									"id": "stateId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns the information on the required state.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Timezone by ID",
+					"request": {
+						"url": {
+							"raw": "{{rcApiBaseUri}}/v1.0/dictionary/timezone/:timezoneId?page={{page}}&perPage={{perPage}}",
+							"auth": {},
+							"host": [
+								"{{rcApiBaseUri}}"
+							],
+							"path": [
+								"v1.0",
+								"dictionary",
+								"timezone",
+								":timezoneId"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "perPage",
+									"value": "{{perPage}}"
+								}
+							],
+							"variable": [
+								{
+									"value": "{{timezoneId}}",
+									"id": "timezoneId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns the information on a certain timezone.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get State List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/state?countryId={{countryId}}&page={{page}}&perPage={{perPage}}&withPhoneNumbers={{withPhoneNumbers}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns all the states for a certain country.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Timezone List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/timezone?page={{page}}&perPage={{perPage}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns all available timezones.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language by ID",
+					"request": {
+						"url": {
+							"raw": "{{rcApiBaseUri}}/v1.0/dictionary/language/:languageId",
+							"auth": {},
+							"host": [
+								"{{rcApiBaseUri}}"
+							],
+							"path": [
+								"v1.0",
+								"dictionary",
+								"language",
+								":languageId"
+							],
+							"variable": [
+								{
+									"value": "{{languageId}}",
+									"id": "languageId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.14 (Release 6.6)</p><p>Returns language by its respective ID.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "User Permissions Category List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Permission Category record exists\"] = 0 !== jsonData.records.length;",
+									"",
+									"postman.setEnvironmentVariable(\"permissionCategoryId\", jsonData.records[0].id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/permission-category",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get list of User Permission Category"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Country by ID",
+					"request": {
+						"url": {
+							"raw": "{{rcApiBaseUri}}/v1.0/dictionary/country/:countryId",
+							"auth": {},
+							"host": [
+								"{{rcApiBaseUri}}"
+							],
+							"path": [
+								"v1.0",
+								"dictionary",
+								"country",
+								":countryId"
+							],
+							"variable": [
+								{
+									"value": "{{countryId}}",
+									"id": "countryId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns the information on the required country.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Fax Cover Page List",
+					"request": {
+						"url": "https://platform.devtest.ringcentral.com/restapi/v1.0/dictionary/fax-cover-page",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 8.2 (Release 1.0.26)</p><p>Returns fax cover pages available for the current extension.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Country List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/country?loginAllowed={{loginAllowed}}&numberSelling={{numberSelling}}&page={{page}}&perPage={{perPage}}&freeSoftphoneLine={{freeSoftphoneLine}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.10 (Release 6.2)</p><p>Returns all the countries available for calling.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "User Permissions Category Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/dictionary/permission-category/{{permissionCategoryId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get User Permission Category Item"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Extensions",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Extension(s) Presence",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"var records = jsonData.records;",
+									"postman.clearEnvironmentVariable(\"recordingId\");",
+									"var recordingId = \"\";",
+									"",
+									"records.forEach(function(record, idx, records) {",
+									"    if(record.hasOwnProperty('recording')) {",
+									"        recordingId = record.recording.id;",
+									"    }",
+									"});",
+									"",
+									"postman.setEnvironmentVariable(\"recordingId\", recordingId);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the account ID",
+									"var accountId = (postman.getEnvironmentVariable('accountId')) ? postman.getEnvironmentVariable('accountId') : '~';",
+									"postman.clearEnvironmentVariable(\"accountId\");",
+									"postman.setEnvironmentVariable(\"accountId\", accountId);",
+									"",
+									"// Set the extension ID (can be a single or batch of IDs up to 30 in a batch)",
+									"var extensionId = (postman.getEnvironmentVariable('extensionId')) ? postman.getEnvironmentVariable('extensionId') : '~';",
+									"postman.clearEnvironmentVariable(\"extensionId\");",
+									"postman.setEnvironmentVariable(\"extensionId\", extensionId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/extension/{{extensionId}}/presence",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Get Presence specified Extension(s)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension List - Enabled User",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/extension?status=Enabled&type=User",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Filters using params that are:\n\nEnabled = true\nUser = true"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension List - All Users",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve a list of all extensions within the account."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension by ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/{{extensionId}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve an extension by extension.id"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension Phone Number List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Contains one or more records\"] = 0 < jsonData.records.length;",
+									"",
+									"jsonData.records.forEach(function(phoneNumberObj) {",
+									"    if(-1 !== phoneNumberObj.features.indexOf('SmsSender')) {",
+									"        postman.setEnvironmentVariable('fromPhoneNumber', phoneNumberObj.phoneNumber);",
+									"    }",
+									"})"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/{{extensionId}}/phone-number",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve an extension's phone number list by extension.id"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Extension Profile Image",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/extension/{{extensionId}}/profile-image",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'></p><p>Returns the extension profile image.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>EditExtensions</td><td>Viewing and updating my extension info (includes extension name, number, email and phone number)</td></tr></tbody></table><h4>API Group</h4><p>High</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Extension Profile Image",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/extension/{{extensionId}}/profile-image",
+						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'></p><p>Updates the extension profile image.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>EditExtensions</td><td>Viewing and updating my extension info (includes extension name, number, email and phone number)</td></tr></tbody></table><h4>API Group</h4><p>High</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension Forwarding Numbers",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/{{extensionId}}/forwarding-number",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve an extension's forwarding number list"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension Profile Image",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/{{extensionId}}/profile-image",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve an extension's profile image by extension.id"
+					},
+					"response": []
+				},
+				{
+					"name": "Get List of Extensions - Departments ONLY",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension?status=Enabled&type=Department",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Filters using params that are:\n\ntype = Department"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Member List - by Department ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"departmentId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/department/{{departmentId}}/members",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve the list of department members, by department ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Extension Authorization Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"roleId\");",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Contains Permissions\"] = 0 !== jsonData.permissions.length;",
+									"tests[\"Contains Effective Role\"] = null !== jsonData.permissions[0].effectiveRole.id && undefined !== jsonData.permissions[0].effectiveRole.id;",
+									"",
+									"",
+									"",
+									"postman.setEnvironmentVariable(\"roleId\", jsonData.permissions[0].effectiveRole.id);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/{{extensionId}}/authz-profile",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve the authz-profile data"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"roleId\");",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Contains Permissions\"] = 0 !== jsonData.permissions.length;",
+									"tests[\"Contains Effective Role\"] = null !== jsonData.permissions[0].effectiveRole.id && undefined !== jsonData.permissions[0].effectiveRole.id;",
+									"",
+									"",
+									"",
+									"postman.setEnvironmentVariable(\"roleId\", jsonData.permissions[0].effectiveRole.id);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"extensionId\", \"~\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/assigned-role",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve the roles assigned to an account."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"description": "",
+			"item": [
+				{
+					"name": "Create Company Pager Message",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/company-pager",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\":{\n        \"extensionNumber\":\"103\"\n    },\n    \"text\":\"Test pager message\",\n    \"to\":[\n        {\n            \"extensionNumber\":\"102\"\n            \n        }\n    ]\n}"
+						},
+						"description": "Create a sample company pager for the currently authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Fax Message",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/{{accountId}}/extension/{{extensionId}}/fax",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Length",
+								"value": "{{Content-Length}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "Multi-part MIME consisting of one part JSON body and one part text. For the MIME boundary, in this UI, use \"Boundary_1_14413901_1361871080888\". JSON body values: <table class=\"tabular-description\"><tr class=\"first property row\" style=\"border-top: 1px solid #e8e8e8\"><td class=\"property-name\">Property</td><td class=\"property-value\">to</td></tr><tr class=\"row\"><td class=\"property-name\">Data type</td><td class=\"property-value\">Contact Info object</td></tr><tr class=\"last property row\"><td class=\"property-name\">Description</td><td class=\"property-value\">Recipient information. <b>phoneNumber</b> property is mandatory</td></tr><tr class=\"first property row\" style=\"border-top: 1px solid #e8e8e8\"><td class=\"property-name\">Property</td><td class=\"property-value\">resolution</td></tr><tr class=\"row\"><td class=\"property-name\">Data type</td><td class=\"property-value\"><select><option>High</option><option>Low</option></select></td></tr><tr class=\"last property row\"><td class=\"property-name\">Description</td><td class=\"property-value\">Fax resolution</td></tr><tr class=\"first property row\" style=\"border-top: 1px solid #e8e8e8\"><td class=\"property-name\">Property</td><td class=\"property-value\">sendTime</td></tr><tr class=\"row\"><td class=\"property-name\">Data type</td><td class=\"property-value\">datetime</td></tr><tr class=\"last property row\"><td class=\"property-name\">Description</td><td class=\"property-value\">Optional. Timestamp to send fax at. If not specified (current or the past),the faxissent immediately</td></tr><tr class=\"first property row\" style=\"border-top: 1px solid #e8e8e8\"><td class=\"property-name\">Property</td><td class=\"property-value\">coverIndex</td></tr><tr class=\"row\"><td class=\"property-name\">Data type</td><td class=\"property-value\">Integer (0-13)<br><select><option>0 (none - no cover page)</option><option>1 (\"Ancient\" cover page)</option><option>2 (\"Birthday\" cover page)</option><option>3 (\"Blank\" cover page)</option><option>4 (\"Clasmod\" cover page)</option><option>5 (\"Classic\" cover page)</option><option>6 (\"Confidential\" cover page)</option><option>7 (\"Contempo\" cover page)</option><option>8 (\"Elegant\" cover page)</option><option>9 (\"Express\" cover page)</option><option>10 (\"Formal\" cover page)</option><option>11 (\"Jazzy\" cover page)</option><option>12 (\"Modern\" cover page)</option><option>13 (\"Urgent\" cover page)</option></select></td></tr><tr class=\"last property row\"><td class=\"property-name\">Description</td><td class=\"property-value\">Optional. Cover page index. If not specified, the default coverpagewhichisconfigured in \"Outbound FaxSettings\" is attached. See also \"Available Cover Pages\" tablebelow</td></tr><tr class=\"first property row\" style=\"border-top: 1px solid #e8e8e8\"><td class=\"property-name\">Property</td><td class=\"property-value\">coverPageText</td></tr><tr class=\"row\"><td class=\"property-name\">Data type</td><td class=\"property-value\">string</td></tr><tr class=\"last property row\"><td class=\"property-name\">Description</td><td class=\"property-value\">Optional. Cover page text, entered by the fax sender and printed on thecoverpage.Maximum length is limited to 1024 symbols</td></tr></table>"
+						},
+						"description": "<p style='font-style:italic;'>Since 1.0.2</p><p>Creates and sends/resends new fax message. Resend can be done if sending failed.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>Faxes</td><td>Sending and receiving faxes</td></tr><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Heavy</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Create SMS Message",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/sms",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\":{\n        \"phoneNumber\":\"{{fromPhoneNumber}}\"\n    },\n    \"text\":\"Test SMS from API, receive twice?\",\n    \"to\":[\n        {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n            \n        }\n    ]\n}"
+						},
+						"description": "Send an SMS from the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Conversation(s) by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/message-store?conversationId={{conversationId}}",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"message-store"
+							],
+							"query": [
+								{
+									"key": "conversationId",
+									"value": "{{conversationId}}"
+								}
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'></p><p>Deletes conversation(s) by conversation ID(s). Batch request is supported.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>EditMessages</td><td>Viewing and updating user messages</td></tr><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Message(s) by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/message-store/:messageId?purge={{purge}}&conversationId={{conversationId}}",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"message-store",
+								":messageId"
+							],
+							"query": [
+								{
+									"key": "purge",
+									"value": "{{purge}}"
+								},
+								{
+									"key": "conversationId",
+									"value": "{{conversationId}}"
+								}
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								},
+								{
+									"value": "{{messageId}}",
+									"id": "messageId"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'></p><p>Deletes message(s) by the given message ID(s). The first call of this method transfers the message to the 'Delete' status. The second call transfers the deleted message to the 'Purged' status. If it is required to make the message 'Purged' immediately (from the first call), then set the query parameter purge to 'True'. Batch request is supported.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>EditMessages</td><td>Viewing and updating user messages</td></tr><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Message(s) by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/message-store/:messageId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"message-store",
+								":messageId"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								},
+								{
+									"value": "{{messageId}}",
+									"id": "messageId"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "JSON body"
+						},
+						"description": "<p style='font-style:italic;'>Since 1.0.2</p><p>Updates message(s) by ID(s). Batch request is supported. Currently, only the message read status updating is supported.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>EditMessages</td><td>Viewing and updating user messages</td></tr><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Message List - Extension",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/message-store",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\":{\n        \"phoneNumber\":\"{{fromPhoneNumber}}\"\n    },\n    \"text\":\"Test SMS from API, receive twice?\",\n    \"to\":[\n        {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n            \n        }\n    ]\n}"
+						},
+						"description": "Get Message List for the Extension"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message(s) by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/message-store/:messageId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"message-store",
+								":messageId"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								},
+								{
+									"value": "{{messageId}}",
+									"id": "messageId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.2</p><p>Returns individual message record(s) by the given message ID(s). The length of inbound messages is unlimited. Batch request is supported.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message Attachment",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/account/:accountId/extension/:extensionId/message-store/:messageId/content/:attachmentId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"account",
+								":accountId",
+								"extension",
+								":extensionId",
+								"message-store",
+								":messageId",
+								"content",
+								":attachmentId"
+							],
+							"variable": [
+								{
+									"value": "{{accountId}}",
+									"id": "accountId"
+								},
+								{
+									"value": "{{extensionId}}",
+									"id": "extensionId"
+								},
+								{
+									"value": "{{attachmentId}}",
+									"id": "attachmentId"
+								},
+								{
+									"value": "{{messageId}}",
+									"id": "messageId"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.4 (Release 5.13)</p><p>Returns particular message attachment data as a media stream.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/{{apiVersion}}/account/{{accountId}}/extension/{{extensionId}}/message-store?messageType=VoiceMail&dateFrom=2016-01-01",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.2</p><p>Returns the list of messages from an extension mailbox.</p><h4>Required Permissions</h4><table class='fullwidth'><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td class='code'>ReadMessages</td><td>Viewing user messages</td></tr></tbody></table><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Message FSync",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"postman.setEnvironmentVariable(\"myAccessToken\", jsonData.access_token);",
+									"",
+									"postman.setEnvironmentVariable(\"lastSyncToken\", jsonData.syncInfo.syncToken);",
+									"postman.setEnvironmentVariable(\"lastSyncTime\", (new Date()).toISOString());"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"now\", (new Date()).toISOString());"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/message-sync?syncType=FSync&messageType=SMS&direction=Inbound&dateTo={{now}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\":{\n        \"phoneNumber\":\"{{fromPhoneNumber}}\"\n    },\n    \"text\":\"Test SMS from API, receive twice?\",\n    \"to\":[\n        {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n            \n        }\n    ]\n}"
+						},
+						"description": "Message FSync for Inbound SMS"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Message ISync",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"now\", (new Date()).toISOString());"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/message-sync?syncType=ISync&syncToken={{lastSyncToken}}&dateFrom={{lastSyncTime}}&dateTo={{now}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\":{\n        \"phoneNumber\":\"{{fromPhoneNumber}}\"\n    },\n    \"text\":\"Test SMS from API, receive twice?\",\n    \"to\":[\n        {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n            \n        }\n    ]\n}"
+						},
+						"description": "Message ISync for Inbound SMS"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Phone Number Parser",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Phonedata",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/number-parser/phonedata.xml",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.12 (Release 6.4)</p><p>Returns configuration settings for phone number parser in a phonedata.xml file.</p><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Parse Phone Number",
+					"request": {
+						"url": "https://platform.devtest.ringcentral.com/restapi/v1.0/number-parser/parse?homeCountry={{homeCountry}}&nationalAsPriority={{nationalAsPriority}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "JSON body"
+						},
+						"description": "<p style='font-style:italic;'>Since 1.0.13 (Release 6.5)</p><p>Returns one or more parsed and/or formatted phone numbers that are passed as a string.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Presence",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Presence - Basic",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/presence",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Not using Subscription, but rather direct GET request to Presence API endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/subscription/:subscriptionId",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"subscription",
+								":subscriptionId"
+							],
+							"variable": [
+								{
+									"value": "{{subscriptionId}}",
+									"id": "subscriptionId"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "JSON body"
+						},
+						"description": "<p style='font-style:italic;'>Since 1.0.6 (Release 5.15)</p><p>Modifies event filters for an existent subscription by its ID. The client application can extend or narrow the events for which it receives notifications in the frame of one subscription.</p><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Presence - Detailed",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/presence?detailedTelephonyStatus=true",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Not using Subscription, but rather direct GET request to Presence API endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Renew Subscription by ID",
+					"request": {
+						"url": {
+							"raw": "https://platform.devtest.ringcentral.com/restapi/v1.0/subscription/:subscriptionId/renew",
+							"protocol": "https",
+							"auth": {},
+							"host": [
+								"platform",
+								"devtest",
+								"ringcentral",
+								"com"
+							],
+							"path": [
+								"restapi",
+								"v1.0",
+								"subscription",
+								":subscriptionId",
+								"renew"
+							],
+							"variable": [
+								{
+									"value": "{{subscriptionId}}",
+									"id": "subscriptionId"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.26 (Release 8.2)</p><p>Renews an existent subscription by ID by posting request with an empty body.</p><h4>API Group</h4><p>Medium</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription List",
+					"request": {
+						"url": "https://platform.devtest.ringcentral.com/restapi/v1.0/subscription",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "<p style='font-style:italic;'>Since 1.0.24 (Release 8.0)</p><p>Returns a list of subscriptions created by a particular user on a particular client app.</p><h4>API Group</h4><p>Light</p>"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Presence - Account Level",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/presence",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Not using Subscription, but rather direct GET request to Presence API endpoint to get a list of presence data for the account."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Push Notifications",
+			"description": "Also known as Subscriptions.\n\nCan be either PubNub or WebHooks.",
+			"item": [
+				{
+					"name": "Get Subscription List",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Retrieve a list of all subscriptions within the account."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subscription - PubNub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Returns a new or existing subscription\"] = 'string' === typeof jsonData.uri;",
+									"",
+									"",
+									"",
+									"postman.setGlobalVariable(\"subscription\", jsonData);",
+									"postman.setGlobalVariable(\"subscription_id\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventFilters\": [\n        \"/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true\"\n        ],\n    \"deliveryMode\": {\n        \"transportType\": \"PubNub\",\n        \"encryption\": true\n    }\n}"
+						},
+						"description": "Creates a new subscription within the account using PubNub as the transport."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription by ID",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription/{{subscription_id}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventFilters\": [\n        \"/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true\"\n        ],\n    \"deliveryMode\": {\n        \"transportType\": \"PubNub\",\n        \"encryption\": true\n    }\n}"
+						},
+						"description": "Retrieve a specific subscription by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription by ID",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventFilters\": [\n        \"/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true\"\n        ],\n    \"deliveryMode\": {\n        \"transportType\": \"PubNub\",\n        \"encryption\": true\n    }\n}"
+						},
+						"description": "Update Event Filters for a specific subscription by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription/{{subscription_id}}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "Cancel a specific subscription by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Renew Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Returns a new or existing subscription\"] = 'string' === typeof jsonData.uri;",
+									"",
+									"",
+									"",
+									"postman.setGlobalVariable(\"subscription\", jsonData);",
+									"postman.setGlobalVariable(\"subscription_id\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription/{{subscription_id}}/renew",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": "Renews a new subscription within the account."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subscription - Webhook",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Returns a new or existing subscription\"] = 'string' === typeof jsonData.uri;",
+									"",
+									"",
+									"",
+									"postman.setGlobalVariable(\"subscription\", jsonData);",
+									"postman.setGlobalVariable(\"subscription_id\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/subscription",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventFilters\": [\n        \"/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true\"\n        ],\n    \"deliveryMode\": {\n        \"transportType\": \"WebHook\",\n        \"address\": \"http://localhost:3000/webhooks\"\n    }\n}"
+						},
+						"description": "Creates a new subscription within the account using Webhook as the transport. This requires a valid web-accessible endpoint (must support HTTPS if not localhost or loopback)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RingOut",
+			"description": "",
+			"item": [
+				{
+					"name": "Make RingOut Call",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"RingOut response has ID\"] = 'number' === typeof jsonData.id;",
+									"postman.setEnvironmentVariable(\"ringoutId\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/ringout",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": {\n        \"phoneNumber\":\"{{rcUsername}}\"\n    },\n    \"to\": {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n    },\n    \"callerId\": {\n    \t\"phoneNumber\": \"15623215778\"\n    }\n}"
+						},
+						"description": "Create a RingOut from current user targeting toPhoneumber"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE RingOut",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/ringout/{{ringoutId}}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": "Delete RingOut"
+					},
+					"response": []
+				},
+				{
+					"name": "GET RingOut by ID",
+					"request": {
+						"url": "{{rcApiBaseUri}}/v1.0/account/~/extension/~/ringout/{{ringoutId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{myAccessToken}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": {\n        \"phoneNumber\":\"{{rcUsername}}\"\n    },\n    \"to\": {\n            \"phoneNumber\":\"{{toPhoneNumber}}\"\n    }\n}"
+						},
+						"description": "Get a RingOut by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get API Versions",
+			"request": {
+				"url": "https://platform.devtest.ringcentral.com/restapi/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "<p style='font-style:italic;'>Since 1.0.0</p><p>Returns current API version(s) and server info.</p><h4>API Group</h4><p>Light</p>"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Version Info",
+			"request": {
+				"url": {
+					"raw": "https://platform.devtest.ringcentral.com/restapi/:apiVersion",
+					"protocol": "https",
+					"auth": {},
+					"host": [
+						"platform",
+						"devtest",
+						"ringcentral",
+						"com"
+					],
+					"path": [
+						"restapi",
+						":apiVersion"
+					],
+					"variable": [
+						{
+							"value": "{{apiVersion}}",
+							"id": "apiVersion"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "<p style='font-style:italic;'>Since 1.0.0</p><p>Returns current API version info by apiVersion.</p><h4>API Group</h4><p>Light</p>"
+			},
+			"response": []
+		}
+	]
+}
