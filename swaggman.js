@@ -14,6 +14,7 @@ const url = require('url');
 const loader = require('./lib/assetLoader');
 const path = require('path');
 const translate = require('./lib/translator');
+const postmanJsonSchema = require('./lib/postmanJsonSchema.v2.0.0.collection.json');
 
 class SwaggMan {
 

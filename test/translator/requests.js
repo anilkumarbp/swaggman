@@ -7,9 +7,9 @@
 // Dependencies
 //const postmanSchema = require('./postmanCollectionSchema.json'); // Used for internal invalidation testing
 const test = require('tape');
-const auth = require('../../lib/translator/auth');
+//const auth = require('../../lib/translator/auth');
 const requests = require('../../lib/translator/requests');
-const urls = require('../../lib/translator/urls');
+//const urls = require('../../lib/translator/urls');
 
 // Stubs
 const swaggerStub = require('../RCSwagger_20161116.json');
@@ -34,8 +34,10 @@ const urlStub = {
     hash: '#myHash',
     variable: [{id: 'myId', value: 'myValue', type: 'myType', name: 'myName'}]
 };
+// TODO: Need to complete using these
 const validSwaggerInValues = ['query', 'header', 'path', 'formData', 'body'];
 const validMethods = ['get', 'put', 'post', 'patch', 'delete', 'options', 'head'];
+// TODO: Need to complete using these
 const validPostmanBodyModes = ['raw', 'urlencoded', 'formdata', 'file'];
 const briefRequestStub = {
     url: '/v1.0/account/{{accountId}}/extension/{{extensionId}}',
